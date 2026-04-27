@@ -1,0 +1,241 @@
+"""
+報表生成模組 - 負責生成專業的 HTML 儀表板及其內部樣式
+"""
+import json
+from datetime import datetime
+from config import STATUS_WEIGHTS
+
+def generate_dashboard_html(summary_data, test_period, risk_dist):
+    """生成包含圖表與 PDF 匯出功能的 QA_Dashboard.html"""
+    print("[UI] 正在生成視覺化儀表板...")
+    
+    now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    
+    # 核心排序：根據 STATUS_WEIGHTS 權重排序
+    sorted_summary = sorted(summary_data, key=lambda x: (
+        STATUS_WEIGHTS.get(x["分析結果"], 99), 
+        -x["勝率"], 
+        x["遊戲名稱"]
+    ))
+    
+    # 統計數據
+    total_games = len(summary_data)
+    high_risk_count = risk_dist.get("異常數據", 0)
+    low_sample_count = risk_dist.get("樣本不足", 0)
+    normal_count = risk_dist.get("正常數據", 0)
+    
+    # 圖表數據準備
+    labels = [r["遊戲名稱"] for r in sorted_summary]
+    data_points = [round(r["勝率"] * 100, 2) for r in sorted_summary]
+    
+    # 動態顏色配比
+    bar_colors = []
+    bar_borders = []
+    for r in sorted_summary:
+        if r["分析結果"] == "異常":
+            bar_colors.append("rgba(239, 68, 68, 0.8)")
+            bar_borders.append("#ef4444")
+        elif r["分析結果"] == "樣本不足":
+            bar_colors.append("rgba(148, 163, 184, 0.8)")
+            bar_borders.append("#94a3b8")
+        else:
+            bar_colors.append("rgba(59, 130, 246, 0.8)")
+            bar_borders.append("#3b82f6")
+
+    html_template = f"""
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>遊戲追殺局風險監控儀表板</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+        body {{ font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif; background-color: #f1f5f9; }}
+        .card {{ background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }}
+        
+        @media print {{
+            .no-print, #export-btn {{ display: none !important; }}
+            #dashboard-content {{ width: 1024px !important; margin: 0 auto !important; padding: 10px !important; display: block !important; }}
+            .card {{ box-shadow: none !important; border: 1px solid #e2e8f0 !important; border-radius: 0 !important; page-break-inside: avoid !important; }}
+            #overview-section {{ page-break-after: always !important; display: block !important; margin: 0 !important; padding-bottom: 20px; }}
+            .card-table {{ page-break-before: always !important; margin-top: 0 !important; border: none !important; display: block !important; }}
+            body {{ background: white !important; padding: 0 !important; }}
+            thead {{ display: table-header-group !important; }}
+            tr {{ page-break-inside: avoid !important; }}
+            .chart-canvas-container {{ height: 500px !important; }}
+        }}
+    </style>
+</head>
+<body class="p-4 md:p-8 bg-slate-50">
+    <div id="dashboard-content" class="max-w-6xl mx-auto">
+        <div id="overview-section">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
+                <div>
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="bg-blue-600 text-white px-3 py-1 rounded-md text-sm font-bold inline-block">LIVE MONITOR</span>
+                        <span class="text-xs text-slate-400 font-medium">版本 2.5 - 模組化穩定版</span>
+                    </div>
+                    <h1 class="text-3xl font-bold text-slate-800">遊戲追殺局風險監控儀表板</h1>
+                    <div class="mt-2 space-y-1">
+                        <p class="text-slate-500 text-sm flex items-center gap-2">
+                            <span class="font-bold text-slate-600">測試期間：</span>
+                            <span class="bg-slate-200 px-2 py-0.5 rounded text-slate-700">{test_period}</span>
+                        </p>
+                        <p class="text-slate-400 text-xs">報表產出時間：{now_str}</p>
+                    </div>
+                </div>
+                <div class="flex gap-4 items-center">
+                    <div class="flex gap-2">
+                        <div class="card p-3 text-center min-w-[100px] border-l-4 border-blue-500">
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">總遊戲</p>
+                            <p class="text-2xl font-extrabold text-slate-700">{total_games}</p>
+                        </div>
+                        <div class="card p-3 text-center min-w-[100px] border-l-4 border-red-500">
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">異常數據</p>
+                            <p class="text-2xl font-extrabold text-red-600">{high_risk_count}</p>
+                        </div>
+                        <div class="card p-3 text-center min-w-[100px] border-l-4 border-slate-400">
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">樣本不足</p>
+                            <p class="text-2xl font-extrabold text-slate-500">{low_sample_count}</p>
+                        </div>
+                    </div>
+                    <button id="export-btn" onclick="exportPDF()" class="no-print bg-slate-800 hover:bg-black text-white px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2 shadow-lg shadow-slate-200">
+                        匯出 PDF
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="card p-6 lg:col-span-2">
+                    <div class="flex items-center justify-between mb-8">
+                        <h2 class="text-xl font-bold text-slate-700">各遊戲勝率分析概覽</h2>
+                        <span class="text-xs text-slate-400 italic">※ 勝率 > 5% 且局數 > 50 標紅</span>
+                    </div>
+                    <div class="h-[350px] chart-canvas-container">
+                        <canvas id="riskChart"></canvas>
+                    </div>
+                </div>
+                <div class="card p-6">
+                    <div class="flex items-center justify-between mb-8">
+                        <h2 class="text-xl font-bold text-slate-700">分析結果分佈</h2>
+                    </div>
+                    <div class="h-[300px] flex items-center justify-center">
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                    <div class="mt-6 space-y-2">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-500 flex items-center gap-2"><span class="w-3 h-3 bg-red-500 rounded-full"></span> 異常數據</span>
+                            <span class="font-bold text-red-600">{high_risk_count}</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-500 flex items-center gap-2"><span class="w-3 h-3 bg-slate-400 rounded-full"></span> 樣本不足</span>
+                            <span class="font-bold text-slate-500">{low_sample_count}</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-500 flex items-center gap-2"><span class="w-3 h-3 bg-blue-500 rounded-full"></span> 正常數據</span>
+                            <span class="font-bold text-blue-600">{normal_count}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card card-table mt-8">
+            <div class="p-6 bg-white border-b border-slate-100 flex items-center justify-between">
+                <h2 class="text-xl font-bold text-slate-700">詳細數據明細</h2>
+                <div class="text-xs text-slate-400">排序權重：異常 > 正常 > 樣本不足</div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="bg-slate-50">
+                            <th class="p-4 text-sm font-bold text-slate-500 border-b">遊戲名稱</th>
+                            <th class="p-4 text-sm font-bold text-slate-500 border-b">勝率 (%)</th>
+                            <th class="p-4 text-sm font-bold text-slate-500 border-b">總局數 (回)</th>
+                            <th class="p-4 text-sm font-bold text-slate-500 border-b">系統判定</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        {"".join([f'''
+                        <tr class="hover:bg-blue-50/50 transition-colors">
+                            <td class="p-4 text-sm text-slate-700 font-bold">{r["遊戲名稱"]}</td>
+                            <td class="p-4 text-sm text-slate-600">{r["殺局贏錢比例"]}</td>
+                            <td class="p-4 text-sm text-slate-600">{r["追殺總局數"]}</td>
+                            <td class="p-4 text-sm">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold { 'bg-red-500/10 text-red-600' if r['分析結果'] == '異常' else ('bg-slate-500/10 text-slate-500' if r['分析結果'] == '樣本不足' else 'bg-green-500/10 text-green-600') }">
+                                    ● {r["分析結果"]}
+                                </span>
+                            </td>
+                        </tr>
+                        ''' for r in sorted_summary])}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <footer class="text-center py-12 mt-8">
+            <p class="text-slate-400 text-sm tracking-widest uppercase italic">Automated Data Analysis Engine v2.5 - Modular Refactored</p>
+        </footer>
+    </div>
+
+    <script>
+        function exportPDF() {{
+            const element = document.getElementById('dashboard-content');
+            const opt = {{
+                margin: 5, 
+                filename: 'QA_Risk_Report_{datetime.now().strftime("%Y%m%d")}.pdf',
+                image: {{ type: 'jpeg', quality: 0.98 }},
+                html2canvas: {{ scale: 2, useCORS: true, logging: false, letterRendering: true, ignoreElements: (el) => el.id === 'export-btn' }},
+                jsPDF: {{ unit: 'mm', format: 'a4', orientation: 'landscape' }},
+                pagebreak: {{ mode: ['css', 'legacy'], before: ['.card-table'] }}
+            }};
+            html2pdf().set(opt).from(element).save();
+        }}
+
+        new Chart(document.getElementById('riskChart').getContext('2d'), {{
+            type: 'bar',
+            data: {{
+                labels: {json.dumps(labels, ensure_ascii=False)},
+                datasets: [{{
+                    data: {json.dumps(data_points)},
+                    backgroundColor: {json.dumps(bar_colors)},
+                    borderColor: {json.dumps(bar_borders)},
+                    borderWidth: 1.5,
+                    borderRadius: 6
+                }}]
+            }},
+            options: {{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {{ legend: {{ display: false }} }},
+                scales: {{
+                    y: {{ beginAtZero: true, ticks: {{ callback: function(v) {{ return v + '%'; }} }} }},
+                    x: {{ grid: {{ display: false }} }}
+                }}
+            }}
+        }});
+
+        new Chart(document.getElementById('pieChart').getContext('2d'), {{
+            type: 'doughnut',
+            data: {{
+                labels: ["異常數據", "樣本不足", "正常數據"],
+                datasets: [{{
+                    data: {json.dumps([high_risk_count, low_sample_count, normal_count])},
+                    backgroundColor: ["#ef4444", "#94a3b8", "#3b82f6"],
+                    borderWidth: 0
+                }}]
+            }},
+            options: {{ responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: {{ legend: {{ display: false }} }} }}
+        }});
+    </script>
+</body>
+</html>
+"""
+    output_path = 'QA_Dashboard.html'
+    with open(output_path, 'w', encoding='utf-8') as f:
+        f.write(html_template)
+    return output_path

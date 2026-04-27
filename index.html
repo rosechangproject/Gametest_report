@@ -1,287 +1,76 @@
 <!DOCTYPE html>
-<html lang="zh-Hant" style="scroll-behavior: smooth;"> <head>
+<html lang="zh-Hant">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rose Chang | 遊戲自動化測試報告</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    
+    <title>Rose | QA 自動化練習作品集</title>
     <style>
         :root {
-            --sidebar-width: 240px;
-            --primary: #1e293b;
-            --accent: #6366f1;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --bg: #f1f5f9;
+            --sidebar-width: 260px;
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --bg-color: #f4f7f6;
         }
-
-        body {
-            font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
-            background-color: var(--bg);
-            margin: 0;
-            display: flex;
-            color: var(--primary);
-        }
-
-        /* 側邊導航修正 */
-        aside {
-            width: var(--sidebar-width);
-            background: var(--primary);
-            color: white;
-            height: 100vh;
-            position: fixed;
-            padding: 1.5rem;
-            box-sizing: border-box;
-            z-index: 100;
-        }
-
-        aside h2 { font-size: 1.2rem; border-bottom: 1px solid #334155; padding-bottom: 1rem; }
-        nav ul { list-style: none; padding: 0; }
+        body { font-family: "Microsoft JhengHei", sans-serif; display: flex; margin: 0; background: var(--bg-color); color: #333; }
         
-        /* 讓超連結填滿清單，並移除底線 */
-        nav li a { 
-            display: block;
-            padding: 0.75rem 0; 
-            color: #94a3b8; 
-            text-decoration: none; 
-            font-size: 0.9rem;
-            transition: 0.3s;
-        }
-        nav li a:hover { color: white; padding-left: 5px; }
+        /* 左側導覽列 */
+        .sidebar { width: var(--sidebar-width); background: var(--primary-color); color: white; height: 100vh; position: fixed; padding: 20px; box-sizing: border-box; }
+        .sidebar h2 { font-size: 1.2rem; border-bottom: 1px solid #5d6d7e; padding-bottom: 15px; margin-bottom: 20px; text-align: center; }
+        .nav-link { display: block; color: #bdc3c7; text-decoration: none; padding: 12px 15px; border-radius: 6px; margin-bottom: 10px; transition: 0.3s; }
+        .nav-link:hover { background: #34495e; color: white; }
+        .nav-link.active { background: var(--accent-color); color: white; }
 
-        main {
-            margin-left: var(--sidebar-width);
-            flex: 1;
-            padding: 2rem;
-            box-sizing: border-box;
-        }
-
-        header {
-            background: white;
-            padding: 1.5rem 2rem;
-            margin: -2rem -2rem 2rem -2rem;
-            border-bottom: 1px solid #e2e8f0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .centered-content { max-width: 1000px; margin: 0 auto; }
-
-        .kpi-row {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .kpi-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .kpi-value { font-size: 1.5rem; font-weight: 700; color: var(--accent); }
-        .kpi-label { font-size: 0.75rem; color: #64748b; margin-top: 5px; }
-
-        .chart-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2rem;
-            margin-bottom: 3rem;
-        }
-
-        .chart-card {
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            width: 100%;
-            max-width: 700px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        section {
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            margin-bottom: 2rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            /* 防止跳轉後標題被切掉，增加一點偏移量 */
-            scroll-margin-top: 20px; 
-        }
-
-        h2 { font-size: 1.25rem; border-left: 4px solid var(--accent); padding-left: 1rem; margin-bottom: 1.5rem; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-        th { text-align: left; background: #f8fafc; padding: 1rem; border-bottom: 2px solid #e2e8f0; }
-        td { padding: 1rem; border-bottom: 1px solid #f1f5f9; }
-
-        .badge { padding: 0.25rem 0.5rem; border-radius: 4px; font-weight: 700; font-size: 0.75rem; }
-        .badge-pass { background: #dcfce7; color: #15803d; }
-        .badge-fail { background: #fee2e2; color: #b91c1c; }
-
-        footer { text-align: center; padding: 2rem; color: #94a3b8; font-size: 0.8rem; }
+        /* 右側主要內容 */
+        .main-content { margin-left: var(--sidebar-width); flex: 1; padding: 40px; }
+        .project-section { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        .project-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
+        .project-title { font-size: 1.4rem; color: var(--primary-color); margin: 0; }
+        .tech-tag { background: #e8f4fd; color: #3498db; padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; }
+        .btn { display: inline-block; background: var(--accent-color); color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; transition: 0.2s; font-weight: bold; }
+        .btn:hover { background: #2980b9; transform: translateY(-2px); }
+        .footer { color: #95a5a6; font-size: 0.9rem; text-align: center; margin-top: 50px; }
     </style>
 </head>
 <body>
 
-<aside>
-    <h2>QA Lab</h2>
-    <nav>
-        <ul>
-            <li><a href="#summary">Dashboard 總覽</a></li>
-            <li><a href="#charts">數據可視化圖表</a></li>
-            <li><a href="#environment">測試環境 (Environment)</a></li>
-            <li><a href="#defects">詳細缺陷分析</a></li>
-            <li><a href="#risk">風險評估</a></li>
-        </ul>
-    </nav>
-</aside>
+<nav class="sidebar">
+    <h2>練習題目導覽</h2>
+    <a href="#" class="nav-link active">🏠 首頁總覽</a>
+    <a href="reports/allure-report.html" class="nav-link">📊 遊戲數值監控</a>
+    <a href="reports/api_analysis_dashboard.html" class="nav-link">📈 API 數據統計</a>
+    <div style="margin-top: 50px; padding: 15px; font-size: 0.8rem; background: rgba(255,255,255,0.1); border-radius: 8px;">
+        💡 提示：點擊上方練習題即可查看完整測試報告。
+    </div>
+</nav>
 
-<main>
-    <header id="top">
-        <div>
-            <h1 style="margin:0; font-size: 1.5rem;">遊戲自動化測試報告</h1>
-            <small style="color: #64748b;">Report ID: #AUTO-2026-0427</small>
+<main class="main-content">
+    <h1>Rose 的 QA 自動化技術存摺</h1>
+    <p>這裡記錄了我從 API 分析、數據統計到自動化部署的學習歷程。每個專案都整合了 Python 腳本分析與前端視覺化呈現。</p>
+
+    <div class="project-section">
+        <div class="project-header">
+            <h3 class="project-title">題目一：遊戲數值回測監控儀表板</h3>
+            <span class="tech-tag">Playwright / Chart.js / GitHub Pages</span>
         </div>
-        <div style="text-align: right;">
-            <span class="badge badge-pass">Status: Stable</span>
-        </div>
-    </header>
-
-    <div class="centered-content">
-        <section id="summary">
-            <h2>1. 執行摘要 (Executive Summary)</h2>
-            <p>本次針對版本 <b>v2.5.0</b> 進行高強度回歸測試。透過自動化腳本模擬 1,250,000 次 Spins，驗證核心遊戲邏輯。計算公式如下：</p>
-            <div style="text-align: center; padding: 1rem; background: #f8fafc; border-radius: 8px;">
-                $$RTP = \frac{\sum \text{Wins}}{\sum \text{Bets}} \times 100\%$$
-            </div>
-            <p style="margin-top:1rem;">當前測試結果顯示系統 RTP 處於理想收斂區間，數值穩定性達標。</p>
-        </section>
-
-        <div class="kpi-row">
-            <div class="kpi-card"><span class="kpi-value">1.25M</span><div class="kpi-label">總回測樣本</div></div>
-            <div class="kpi-card"><span class="kpi-value" style="color: var(--success);">96.02%</span><div class="kpi-label">實際 RTP</div></div>
-            <div class="kpi-card"><span class="kpi-value" style="color: var(--danger);">10</span><div class="kpi-label">攔截 Bug 數</div></div>
-            <div class="kpi-card"><span class="kpi-value">0.8s</span><div class="kpi-label">平均響應時間</div></div>
-        </div>
-
-        <div class="chart-section" id="charts">
-            <div class="chart-card">
-                <h3>測試案例分佈 (Test Case Distribution)</h3>
-                <canvas id="pieChart"></canvas>
-            </div>
-            <div class="chart-card">
-                <h3>RTP 收斂趨勢 (RTP Convergence Trend)</h3>
-                <canvas id="lineChart"></canvas>
-            </div>
-        </div>
-
-        <section id="environment">
-            <h2>2. 測試環境 (Test Environment)</h2>
-            <table>
-                <tr>
-                    <th>OS / Device</th>
-                    <td>Windows 11 / Automated Runner Instance</td>
-                    <th>DB Source</th>
-                    <td>Staging Read-only Replica</td>
-                </tr>
-                <tr>
-                    <th>Framework</th>
-                    <td>Python 3.10 + Playwright 1.42</td>
-                    <th>RNG Seed</th>
-                    <td>Secure Random (Deterministic Mode)</td>
-                </tr>
-            </table>
-        </section>
-
-        <section id="defects">
-            <h2>3. 詳細缺陷分析 (Defect Analysis)</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>模組</th>
-                        <th>異常描述</th>
-                        <th>嚴重度</th>
-                        <th>狀態</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>#BUG-101</td>
-                        <td>追殺機制</td>
-                        <td>高勝率觸發後 Session 狀態未清除</td>
-                        <td style="color:var(--danger); font-weight:700;">Critical</td>
-                        <td><span class="badge badge-fail">Open</span></td>
-                    </tr>
-                    <tr>
-                        <td>#BUG-105</td>
-                        <td>多語系</td>
-                        <td>泰語語系下按鈕文字發生溢出</td>
-                        <td>Minor</td>
-                        <td><span class="badge badge-pass">Fixed</span></td>
-                    </tr>
-                    <tr>
-                        <td>#BUG-109</td>
-                        <td>連線穩定</td>
-                        <td>網路波動時偶發性 WebSocket 斷線</td>
-                        <td>Major</td>
-                        <td><span class="badge badge-fail">Pending</span></td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-
-        <section id="risk">
-            <h2>4. 風險評估與建議 (Risk & Conclusion)</h2>
-            <p>目前雖然 **RTP 收斂穩定**，但 **#BUG-101** 的狀態鎖定問題可能導致玩家數據不同步。強烈建議在修復該項目後再進行上線。自動化腳本已部署至 Jenkins 進行每日監控。</p>
-        </section>
+        <p><strong>練習目的：</strong> 解決生硬測試數據難以閱讀的問題，透過視覺化折線圖快速掌握 RTP 與追殺倍率的變化趨勢。</p>
+        <p><strong>技術重點：</strong> 整合 GitHub Pages 自動化部署流程，實現測試結果線上即時檢視。</p>
+        <a href="reports/allure-report.html" class="btn">進入查看成果 →</a>
     </div>
 
-    <footer>
-        <p>&copy; 2026 Rose Chang | 內部機密數據 - 請勿外流</p>
-    </footer>
+    <div class="project-section">
+        <div class="project-header">
+            <h3 class="project-title">題目二：API 資料統計與分析報告</h3>
+            <span class="tech-tag">Python / JSON / Data Analysis</span>
+        </div>
+        <p><strong>練習目的：</strong> 針對 API 回傳的大量 JSON 資料進行清洗與統計，產出結構化的 QA 數據報告。</p>
+        <p><strong>技術重點：</strong> 使用 Python 處理複雜的巢狀 JSON 資料，並進行邏輯運算產出統計值。</p>
+        <a href="reports/api_analysis_dashboard.html" class="btn">進入查看成果 →</a>
+    </div>
+
+    <div class="footer">
+        © 2026 Rose Chang - QA Automation Journey
+    </div>
 </main>
-
-<script>
-    // 圓餅圖
-    new Chart(document.getElementById('pieChart'), {
-        type: 'doughnut',
-        data: {
-            labels: ['Passed', 'Failed', 'Skipped'],
-            datasets: [{
-                data: [95, 3, 2],
-                backgroundColor: ['#10b981', '#ef4444', '#f59e0b']
-            }]
-        },
-        options: { plugins: { legend: { position: 'bottom' } } }
-    });
-
-    // 折線圖
-    new Chart(document.getElementById('lineChart'), {
-        type: 'line',
-        data: {
-            labels: ['10k', '50k', '100k', '500k', '1M', '1.25M'],
-            datasets: [{
-                label: 'RTP %',
-                data: [94.2, 95.5, 96.3, 96.1, 96.05, 96.02],
-                borderColor: '#6366f1',
-                tension: 0.3,
-                fill: true,
-                backgroundColor: 'rgba(99, 102, 241, 0.1)'
-            }]
-        }
-    });
-</script>
 
 </body>
 </html>

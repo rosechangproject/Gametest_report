@@ -1,0 +1,340 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>遊戲追殺局風險監控儀表板</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+        body { font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif; background-color: #f1f5f9; }
+        .card { background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+        
+        @media print {
+            .no-print, #export-btn { display: none !important; }
+            #dashboard-content { width: 1024px !important; margin: 0 auto !important; padding: 10px !important; display: block !important; }
+            .card { box-shadow: none !important; border: 1px solid #e2e8f0 !important; border-radius: 0 !important; page-break-inside: avoid !important; }
+            #overview-section { page-break-after: always !important; display: block !important; margin: 0 !important; padding-bottom: 20px; }
+            .card-table { page-break-before: always !important; margin-top: 0 !important; border: none !important; display: block !important; }
+            body { background: white !important; padding: 0 !important; }
+            thead { display: table-header-group !important; }
+            tr { page-break-inside: avoid !important; }
+            .chart-canvas-container { height: 500px !important; }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 bg-slate-50">
+    <style>
+    .back-home-btn {
+        position: fixed;
+        bottom: 30px;
+        left: 30px;
+        background-color: #2c3e50;
+        color: white;
+        padding: 12px 25px;
+        border-radius: 50px;
+        text-decoration: none;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        z-index: 99999; /* 確保它在報告圖表的最上層 */
+        font-size: 15px;
+        font-weight: bold;
+        transition: 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .back-home-btn:hover {
+        background-color: #3498db;
+        transform: scale(1.1);
+        color: white;
+    }
+</style>
+<a href="../index.html" class="back-home-btn">🏠 返回目錄</a>
+
+    <div id="dashboard-content" class="max-w-6xl mx-auto">
+        <div id="overview-section">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
+                <div>
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="bg-blue-600 text-white px-3 py-1 rounded-md text-sm font-bold inline-block">LIVE MONITOR</span>
+                        <span class="text-xs text-slate-400 font-medium">版本 2.5 - 模組化穩定版</span>
+                    </div>
+                    <h1 class="text-3xl font-bold text-slate-800">遊戲追殺局風險監控儀表板</h1>
+                    <div class="mt-2 space-y-1">
+                        <p class="text-slate-500 text-sm flex items-center gap-2">
+                            <span class="font-bold text-slate-600">測試期間：</span>
+                            <span class="bg-slate-200 px-2 py-0.5 rounded text-slate-700">2026-01-29 09:19:56 ~ 2026-01-29 23:58:20</span>
+                        </p>
+                        <p class="text-slate-400 text-xs">報表產出時間：2026-04-10 10:46:53</p>
+                    </div>
+                </div>
+                <div class="flex gap-4 items-center">
+                    <div class="flex gap-2">
+                        <div class="card p-3 text-center min-w-[100px] border-l-4 border-blue-500">
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">總遊戲</p>
+                            <p class="text-2xl font-extrabold text-slate-700">12</p>
+                        </div>
+                        <div class="card p-3 text-center min-w-[100px] border-l-4 border-red-500">
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">異常數據</p>
+                            <p class="text-2xl font-extrabold text-red-600">1</p>
+                        </div>
+                        <div class="card p-3 text-center min-w-[100px] border-l-4 border-slate-400">
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">樣本不足</p>
+                            <p class="text-2xl font-extrabold text-slate-500">9</p>
+                        </div>
+                    </div>
+                    <button id="export-btn" onclick="exportPDF()" class="no-print bg-slate-800 hover:bg-black text-white px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2 shadow-lg shadow-slate-200">
+                        匯出 PDF
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="card p-6 lg:col-span-2">
+                    <div class="flex items-center justify-between mb-8">
+                        <h2 class="text-xl font-bold text-slate-700">各遊戲勝率分析概覽</h2>
+                        <span class="text-xs text-slate-400 italic">※ 勝率 > 5% 且局數 > 50 標紅</span>
+                    </div>
+                    <div class="h-[350px] chart-canvas-container">
+                        <canvas id="riskChart"></canvas>
+                    </div>
+                </div>
+                <div class="card p-6">
+                    <div class="flex items-center justify-between mb-8">
+                        <h2 class="text-xl font-bold text-slate-700">分析結果分佈</h2>
+                    </div>
+                    <div class="h-[300px] flex items-center justify-center">
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                    <div class="mt-6 space-y-2">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-500 flex items-center gap-2"><span class="w-3 h-3 bg-red-500 rounded-full"></span> 異常數據</span>
+                            <span class="font-bold text-red-600">1</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-500 flex items-center gap-2"><span class="w-3 h-3 bg-slate-400 rounded-full"></span> 樣本不足</span>
+                            <span class="font-bold text-slate-500">9</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-500 flex items-center gap-2"><span class="w-3 h-3 bg-blue-500 rounded-full"></span> 正常數據</span>
+                            <span class="font-bold text-blue-600">2</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card card-table mt-8">
+            <div class="p-6 bg-white border-b border-slate-100 flex items-center justify-between">
+                <h2 class="text-xl font-bold text-slate-700">詳細數據明細</h2>
+                <div class="text-xs text-slate-400">排序權重：異常 > 正常 > 樣本不足</div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="bg-slate-50">
+                            <th class="p-4 text-sm font-bold text-slate-500 border-b">遊戲名稱</th>
+                            <th class="p-4 text-sm font-bold text-slate-500 border-b">勝率 (%)</th>
+                            <th class="p-4 text-sm font-bold text-slate-500 border-b">總局數 (回)</th>
+                            <th class="p-4 text-sm font-bold text-slate-500 border-b">系統判定</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        
+                        <tr class="hover:bg-blue-50/50 transition-colors">
+                            <td class="p-4 text-sm text-slate-700 font-bold">大老二</td>
+                            <td class="p-4 text-sm text-slate-600">18.58%</td>
+                            <td class="p-4 text-sm text-slate-600">1227</td>
+                            <td class="p-4 text-sm">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-red-500/10 text-red-600">
+                                    ● 異常
+                                </span>
+                            </td>
+                        </tr>
+                        
+                        <tr class="hover:bg-blue-50/50 transition-colors">
+                            <td class="p-4 text-sm text-slate-700 font-bold">比大小</td>
+                            <td class="p-4 text-sm text-slate-600">3.64%</td>
+                            <td class="p-4 text-sm text-slate-600">55</td>
+                            <td class="p-4 text-sm">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-green-500/10 text-green-600">
+                                    ● 正常
+                                </span>
+                            </td>
+                        </tr>
+                        
+                        <tr class="hover:bg-blue-50/50 transition-colors">
+                            <td class="p-4 text-sm text-slate-700 font-bold">水果机</td>
+                            <td class="p-4 text-sm text-slate-600">3.03%</td>
+                            <td class="p-4 text-sm text-slate-600">132</td>
+                            <td class="p-4 text-sm">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-green-500/10 text-green-600">
+                                    ● 正常
+                                </span>
+                            </td>
+                        </tr>
+                        
+                        <tr class="hover:bg-blue-50/50 transition-colors">
+                            <td class="p-4 text-sm text-slate-700 font-bold">铸剑</td>
+                            <td class="p-4 text-sm text-slate-600">30.43%</td>
+                            <td class="p-4 text-sm text-slate-600">23</td>
+                            <td class="p-4 text-sm">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-slate-500/10 text-slate-500">
+                                    ● 樣本不足
+                                </span>
+                            </td>
+                        </tr>
+                        
+                        <tr class="hover:bg-blue-50/50 transition-colors">
+                            <td class="p-4 text-sm text-slate-700 font-bold">十三水</td>
+                            <td class="p-4 text-sm text-slate-600">8.33%</td>
+                            <td class="p-4 text-sm text-slate-600">12</td>
+                            <td class="p-4 text-sm">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-slate-500/10 text-slate-500">
+                                    ● 樣本不足
+                                </span>
+                            </td>
+                        </tr>
+                        
+                        <tr class="hover:bg-blue-50/50 transition-colors">
+                            <td class="p-4 text-sm text-slate-700 font-bold">台湾麻将</td>
+                            <td class="p-4 text-sm text-slate-600">0.00%</td>
+                            <td class="p-4 text-sm text-slate-600">1</td>
+                            <td class="p-4 text-sm">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-slate-500/10 text-slate-500">
+                                    ● 樣本不足
+                                </span>
+                            </td>
+                        </tr>
+                        
+                        <tr class="hover:bg-blue-50/50 transition-colors">
+                            <td class="p-4 text-sm text-slate-700 font-bold">四支刀</td>
+                            <td class="p-4 text-sm text-slate-600">0.00%</td>
+                            <td class="p-4 text-sm text-slate-600">9</td>
+                            <td class="p-4 text-sm">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-slate-500/10 text-slate-500">
+                                    ● 樣本不足
+                                </span>
+                            </td>
+                        </tr>
+                        
+                        <tr class="hover:bg-blue-50/50 transition-colors">
+                            <td class="p-4 text-sm text-slate-700 font-bold">射门之王</td>
+                            <td class="p-4 text-sm text-slate-600">0.00%</td>
+                            <td class="p-4 text-sm text-slate-600">6</td>
+                            <td class="p-4 text-sm">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-slate-500/10 text-slate-500">
+                                    ● 樣本不足
+                                </span>
+                            </td>
+                        </tr>
+                        
+                        <tr class="hover:bg-blue-50/50 transition-colors">
+                            <td class="p-4 text-sm text-slate-700 font-bold">掼蛋</td>
+                            <td class="p-4 text-sm text-slate-600">0.00%</td>
+                            <td class="p-4 text-sm text-slate-600">1</td>
+                            <td class="p-4 text-sm">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-slate-500/10 text-slate-500">
+                                    ● 樣本不足
+                                </span>
+                            </td>
+                        </tr>
+                        
+                        <tr class="hover:bg-blue-50/50 transition-colors">
+                            <td class="p-4 text-sm text-slate-700 font-bold">斗地主</td>
+                            <td class="p-4 text-sm text-slate-600">0.00%</td>
+                            <td class="p-4 text-sm text-slate-600">1</td>
+                            <td class="p-4 text-sm">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-slate-500/10 text-slate-500">
+                                    ● 樣本不足
+                                </span>
+                            </td>
+                        </tr>
+                        
+                        <tr class="hover:bg-blue-50/50 transition-colors">
+                            <td class="p-4 text-sm text-slate-700 font-bold">百鬼夜行</td>
+                            <td class="p-4 text-sm text-slate-600">0.00%</td>
+                            <td class="p-4 text-sm text-slate-600">1</td>
+                            <td class="p-4 text-sm">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-slate-500/10 text-slate-500">
+                                    ● 樣本不足
+                                </span>
+                            </td>
+                        </tr>
+                        
+                        <tr class="hover:bg-blue-50/50 transition-colors">
+                            <td class="p-4 text-sm text-slate-700 font-bold">通比牛牛</td>
+                            <td class="p-4 text-sm text-slate-600">0.00%</td>
+                            <td class="p-4 text-sm text-slate-600">4</td>
+                            <td class="p-4 text-sm">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-slate-500/10 text-slate-500">
+                                    ● 樣本不足
+                                </span>
+                            </td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <footer class="text-center py-12 mt-8">
+            <p class="text-slate-400 text-sm tracking-widest uppercase italic">Automated Data Analysis Engine v2.5 - Modular Refactored</p>
+        </footer>
+    </div>
+
+    <script>
+        function exportPDF() {
+            const element = document.getElementById('dashboard-content');
+            const opt = {
+                margin: 5, 
+                filename: 'QA_Risk_Report_20260410.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, logging: false, letterRendering: true, ignoreElements: (el) => el.id === 'export-btn' },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
+                pagebreak: { mode: ['css', 'legacy'], before: ['.card-table'] }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+
+        new Chart(document.getElementById('riskChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: ["大老二", "比大小", "水果机", "铸剑", "十三水", "台湾麻将", "四支刀", "射门之王", "掼蛋", "斗地主", "百鬼夜行", "通比牛牛"],
+                datasets: [{
+                    data: [18.58, 3.64, 3.03, 30.43, 8.33, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                    backgroundColor: ["rgba(239, 68, 68, 0.8)", "rgba(59, 130, 246, 0.8)", "rgba(59, 130, 246, 0.8)", "rgba(148, 163, 184, 0.8)", "rgba(148, 163, 184, 0.8)", "rgba(148, 163, 184, 0.8)", "rgba(148, 163, 184, 0.8)", "rgba(148, 163, 184, 0.8)", "rgba(148, 163, 184, 0.8)", "rgba(148, 163, 184, 0.8)", "rgba(148, 163, 184, 0.8)", "rgba(148, 163, 184, 0.8)"],
+                    borderColor: ["#ef4444", "#3b82f6", "#3b82f6", "#94a3b8", "#94a3b8", "#94a3b8", "#94a3b8", "#94a3b8", "#94a3b8", "#94a3b8", "#94a3b8", "#94a3b8"],
+                    borderWidth: 1.5,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, ticks: { callback: function(v) { return v + '%'; } } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('pieChart').getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: ["異常數據", "樣本不足", "正常數據"],
+                datasets: [{
+                    data: [1, 9, 2],
+                    backgroundColor: ["#ef4444", "#94a3b8", "#3b82f6"],
+                    borderWidth: 0
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { display: false } } }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "rows": [
+    {"gameName": "大老二", "roomType": "B", "profit": "500"},
+    {"gameName": "大老二", "roomType": "B", "profit": "-200"},
+    {"gameName": "大老二", "roomType": "B", "profit": "100"},
+    {"gameName": "水果機", "roomType": "T", "profit": "10"},
+    {"gameName": "水果機", "roomType": "T", "profit": "-50"},
+    {"gameName": "百人牛牛", "roomType": "B", "profit": "1000"},
+    {"gameName": "百人牛牛", "roomType": "B", "profit": "500"}
+  ]
+}
