@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QA Automation Report | 遊戲邏輯與風險監控</title>
+    <style>
+        :root {
+            --primary: #0f172a; /* 極深藍，展現權威 */
+            --secondary: #64748b;
+            --accent: #3b82f6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg: #f8fafc;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--primary);
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+        }
+
+        /* 頂部標題區 */
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 3rem 1rem;
+            text-align: center;
+            border-bottom: 4px solid var(--accent);
+        }
+
+        header h1 { margin: 0; font-size: 2rem; font-weight: 800; letter-spacing: -0.025em; }
+        .subtitle { color: var(--secondary); margin-top: 0.5rem; font-size: 1rem; }
+
+        .container { max-width: 1000px; margin: -2rem auto 3rem; padding: 0 1rem; }
+
+        /* KPI 指標卡 */
+        .kpi-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .kpi-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            text-align: center;
+            border-top: 4px solid var(--accent);
+        }
+
+        .kpi-value { font-size: 2rem; font-weight: 700; display: block; }
+        .kpi-label { font-size: 0.8rem; color: var(--secondary); font-weight: 600; text-transform: uppercase; }
+
+        /* 內容區塊 */
+        section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+            margin-bottom: 2rem;
+        }
+
+        h2 {
+            font-size: 1.25rem;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        h2::before {
+            content: "";
+            display: inline-block;
+            width: 4px;
+            height: 1.25rem;
+            background: var(--accent);
+            margin-right: 0.75rem;
+            border-radius: 2px;
+        }
+
+        /* 表格樣式 */
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        th { text-align: left; padding: 1rem; background: #f1f5f9; color: var(--secondary); }
+        td { padding: 1rem; border-bottom: 1px solid #e2e8f0; }
+
+        /* 標籤樣式 */
+        .badge {
+            padding: 0.25rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        .badge-success { background: #dcfce7; color: #166534; }
+        .badge-danger { background: #fee2e2; color: #991b1b; }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+
+        /* 視覺條（模擬進度圖） */
+        .progress-bar {
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+        .progress-fill { height: 100%; background: var(--accent); }
+
+        footer { text-align: center; padding: 2rem; color: var(--secondary); font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>遊戲邏輯自動化測試總結報告</h1>
+    <div class="subtitle">星際戰線：自動化回測專案 (Project Star-Frontier)</div>
+</header>
+
+<div class="container">
+    <div class="kpi-container">
+        <div class="kpi-card" style="border-top-color: var(--accent);">
+            <span class="kpi-value">512</span>
+            <span class="kpi-label">總測試案例數</span>
+        </div>
+        <div class="kpi-card" style="border-top-color: var(--success);">
+            <span class="kpi-value">98.2%</span>
+            <span class="kpi-label">自動化覆蓋率</span>
+        </div>
+        <div class="kpi-card" style="border-top-color: var(--danger);">
+            <span class="kpi-value">3</span>
+            <span class="kpi-label">待處理嚴重缺陷</span>
+        </div>
+        <div class="kpi-card" style="border-top-color: var(--warning);">
+            <span class="kpi-value">1.4s</span>
+            <span class="kpi-label">平均 API 響應</span>
+        </div>
+    </div>
+
+    <section>
+        <h2>1. 測試概況 (Executive Summary)</h2>
+        <p>本次測試針對版本 <strong>v2.4.0-build.88</strong> 進行回歸測試。重點驗證「追殺邏輯」在極端樣本下的機率偏差值。透過 Python (Playwright) 模擬 10,000 局戰鬥，確保系統 RTP 符合預期標準。</p>
+        <div style="margin-top: 1rem;">
+            <strong>測試結論：</strong> <span class="badge badge-success">通過 (穩定)</span>
+            <p style="font-size: 0.85rem; color: var(--secondary);">*註：除存檔同步異常外，核心遊戲邏輯運行無誤。</p>
+        </div>
+    </section>
+
+    <section>
+        <h2>2. 技術規格與環境 (Technical Environment)</h2>
+        <div class="table-wrapper">
+            <table>
+                <tr>
+                    <th>測試機台</th>
+                    <td>QA-Auto-Runner-04 (Cloud Instance)</td>
+                    <th>資料來源</th>
+                    <td>Staging DB (MySQL v8.0)</td>
+                </tr>
+                <tr>
+                    <th>自動化框架</th>
+                    <td>Pytest + Playwright + Allure</td>
+                    <th>核心算法</th>
+                    <td>Mersenne Twister (RNG 驗證)</td>
+                </tr>
+            </table>
+        </div>
+    </section>
+
+    <section>
+        <h2>3. 關鍵缺陷分析 (Critical Defects)</h2>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>編號</th>
+                        <th>模組</th>
+                        <th>異常描述</th>
+                        <th>嚴重程度</th>
+                        <th>當前狀態</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>#BUG-882</td>
+                        <td>金融系統</td>
+                        <td>玩家在斷線重連後，追殺局補償金未正確入庫</td>
+                        <td><span class="badge badge-danger">嚴重 (Critical)</span></td>
+                        <td>修復中</td>
+                    </tr>
+                    <tr>
+                        <td>#BUG-885</td>
+                        <td>UI 顯示</td>
+                        <td>勝率超過 15% 時，警示燈號顏色渲染錯誤</td>
+                        <td><span class="badge badge-warning">一般 (Major)</span></td>
+                        <td>已指派</td>
+                    </tr>
+                    <tr>
+                        <td>#BUG-890</td>
+                        <td>數值平衡</td>
+                        <td>新手教學關卡之掉落機率與設定檔不符</td>
+                        <td><span class="badge badge-success">輕微 (Minor)</span></td>
+                        <td>已修復</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section>
+        <h2>4. 自動化執行效率 (Automation Efficiency)</h2>
+        <div style="margin-bottom: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                <span>核心邏輯測試 (Core Logic)</span>
+                <span>100%</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width: 100%; background: var(--success);"></div></div>
+        </div>
+        <div style="margin-bottom: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                <span>介面壓力測試 (UI Stress)</span>
+                <span>75%</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width: 75%; background: var(--accent);"></div></div>
+        </div>
+    </section>
+
+    <section style="background: #f1f5f9; border: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <p style="font-size: 0.75rem; color: var(--secondary); margin: 0;">測試執行人</p>
+                <p style="font-weight: 700; margin: 0;">Rose Chang</p>
+            </div>
+            <div style="text-align: right;">
+                <p style="font-size: 0.75rem; color: var(--secondary); margin: 0;">報告產生時間</p>
+                <p style="font-weight: 700; margin: 0;">2026-04-27 11:00 (UTC+8)</p>
+            </div>
+        </div>
+    </section>
+</div>
+
+<footer>
+    <p>Confidential - Internal Use Only | Powered by Python Automation Tools</p>
+</footer>
+
+</body>
+</html>
