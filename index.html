@@ -1,48 +1,80 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
-<head>
+<html lang="zh-Hant" style="scroll-behavior: smooth;"> <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QA Automation Report | 遊戲邏輯與風險監控</title>
+    <title>Rose Chang | 遊戲自動化測試旗艦報告</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
     <style>
         :root {
-            --primary: #0f172a; /* 極深藍，展現權威 */
-            --secondary: #64748b;
-            --accent: #3b82f6;
+            --sidebar-width: 240px;
+            --primary: #1e293b;
+            --accent: #6366f1;
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
-            --bg: #f8fafc;
+            --bg: #f1f5f9;
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
             background-color: var(--bg);
-            color: var(--primary);
             margin: 0;
-            padding: 0;
-            line-height: 1.5;
+            display: flex;
+            color: var(--primary);
         }
 
-        /* 頂部標題區 */
-        header {
-            background-color: var(--primary);
+        /* 側邊導航修正 */
+        aside {
+            width: var(--sidebar-width);
+            background: var(--primary);
             color: white;
-            padding: 3rem 1rem;
-            text-align: center;
-            border-bottom: 4px solid var(--accent);
+            height: 100vh;
+            position: fixed;
+            padding: 1.5rem;
+            box-sizing: border-box;
+            z-index: 100;
         }
 
-        header h1 { margin: 0; font-size: 2rem; font-weight: 800; letter-spacing: -0.025em; }
-        .subtitle { color: var(--secondary); margin-top: 0.5rem; font-size: 1rem; }
+        aside h2 { font-size: 1.2rem; border-bottom: 1px solid #334155; padding-bottom: 1rem; }
+        nav ul { list-style: none; padding: 0; }
+        
+        /* 讓超連結填滿清單，並移除底線 */
+        nav li a { 
+            display: block;
+            padding: 0.75rem 0; 
+            color: #94a3b8; 
+            text-decoration: none; 
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+        nav li a:hover { color: white; padding-left: 5px; }
 
-        .container { max-width: 1000px; margin: -2rem auto 3rem; padding: 0 1rem; }
+        main {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
 
-        /* KPI 指標卡 */
-        .kpi-container {
+        header {
+            background: white;
+            padding: 1.5rem 2rem;
+            margin: -2rem -2rem 2rem -2rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .centered-content { max-width: 1000px; margin: 0 auto; }
+
+        .kpi-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 1rem;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
             margin-bottom: 2rem;
         }
 
@@ -50,203 +82,206 @@
             background: white;
             padding: 1.5rem;
             border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
             text-align: center;
-            border-top: 4px solid var(--accent);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
-        .kpi-value { font-size: 2rem; font-weight: 700; display: block; }
-        .kpi-label { font-size: 0.8rem; color: var(--secondary); font-weight: 600; text-transform: uppercase; }
+        .kpi-value { font-size: 1.5rem; font-weight: 700; color: var(--accent); }
+        .kpi-label { font-size: 0.75rem; color: #64748b; margin-top: 5px; }
 
-        /* 內容區塊 */
+        .chart-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .chart-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 700px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
         section {
             background: white;
             padding: 2rem;
             border-radius: 12px;
-            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
             margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            /* 防止跳轉後標題被切掉，增加一點偏移量 */
+            scroll-margin-top: 20px; 
         }
 
-        h2 {
-            font-size: 1.25rem;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 0.75rem;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-        }
+        h2 { font-size: 1.25rem; border-left: 4px solid var(--accent); padding-left: 1rem; margin-bottom: 1.5rem; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        th { text-align: left; background: #f8fafc; padding: 1rem; border-bottom: 2px solid #e2e8f0; }
+        td { padding: 1rem; border-bottom: 1px solid #f1f5f9; }
 
-        h2::before {
-            content: "";
-            display: inline-block;
-            width: 4px;
-            height: 1.25rem;
-            background: var(--accent);
-            margin-right: 0.75rem;
-            border-radius: 2px;
-        }
+        .badge { padding: 0.25rem 0.5rem; border-radius: 4px; font-weight: 700; font-size: 0.75rem; }
+        .badge-pass { background: #dcfce7; color: #15803d; }
+        .badge-fail { background: #fee2e2; color: #b91c1c; }
 
-        /* 表格樣式 */
-        .table-wrapper { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-        th { text-align: left; padding: 1rem; background: #f1f5f9; color: var(--secondary); }
-        td { padding: 1rem; border-bottom: 1px solid #e2e8f0; }
-
-        /* 標籤樣式 */
-        .badge {
-            padding: 0.25rem 0.6rem;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 700;
-        }
-        .badge-success { background: #dcfce7; color: #166534; }
-        .badge-danger { background: #fee2e2; color: #991b1b; }
-        .badge-warning { background: #fef3c7; color: #92400e; }
-
-        /* 視覺條（模擬進度圖） */
-        .progress-bar {
-            height: 8px;
-            background: #e2e8f0;
-            border-radius: 4px;
-            margin-top: 0.5rem;
-            overflow: hidden;
-        }
-        .progress-fill { height: 100%; background: var(--accent); }
-
-        footer { text-align: center; padding: 2rem; color: var(--secondary); font-size: 0.8rem; }
+        footer { text-align: center; padding: 2rem; color: #94a3b8; font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>遊戲邏輯自動化測試總結報告</h1>
-    <div class="subtitle">星際戰線：自動化回測專案 (Project Star-Frontier)</div>
-</header>
+<aside>
+    <h2>QA Lab</h2>
+    <nav>
+        <ul>
+            <li><a href="#summary">Dashboard 總覽</a></li>
+            <li><a href="#charts">數據可視化圖表</a></li>
+            <li><a href="#environment">測試環境 (Environment)</a></li>
+            <li><a href="#defects">詳細缺陷分析</a></li>
+            <li><a href="#risk">風險評估</a></li>
+        </ul>
+    </nav>
+</aside>
 
-<div class="container">
-    <div class="kpi-container">
-        <div class="kpi-card" style="border-top-color: var(--accent);">
-            <span class="kpi-value">512</span>
-            <span class="kpi-label">總測試案例數</span>
+<main>
+    <header id="top">
+        <div>
+            <h1 style="margin:0; font-size: 1.5rem;">遊戲數值回測監控儀表板</h1>
+            <small style="color: #64748b;">Report ID: #AUTO-2026-0427</small>
         </div>
-        <div class="kpi-card" style="border-top-color: var(--success);">
-            <span class="kpi-value">98.2%</span>
-            <span class="kpi-label">自動化覆蓋率</span>
+        <div style="text-align: right;">
+            <span class="badge badge-pass">Status: Stable</span>
         </div>
-        <div class="kpi-card" style="border-top-color: var(--danger);">
-            <span class="kpi-value">3</span>
-            <span class="kpi-label">待處理嚴重缺陷</span>
-        </div>
-        <div class="kpi-card" style="border-top-color: var(--warning);">
-            <span class="kpi-value">1.4s</span>
-            <span class="kpi-label">平均 API 響應</span>
-        </div>
-    </div>
+    </header>
 
-    <section>
-        <h2>1. 測試概況 (Executive Summary)</h2>
-        <p>本次測試針對版本 <strong>v2.4.0-build.88</strong> 進行回歸測試。重點驗證「追殺邏輯」在極端樣本下的機率偏差值。透過 Python (Playwright) 模擬 10,000 局戰鬥，確保系統 RTP 符合預期標準。</p>
-        <div style="margin-top: 1rem;">
-            <strong>測試結論：</strong> <span class="badge badge-success">通過 (穩定)</span>
-            <p style="font-size: 0.85rem; color: var(--secondary);">*註：除存檔同步異常外，核心遊戲邏輯運行無誤。</p>
-        </div>
-    </section>
+    <div class="centered-content">
+        <section id="summary">
+            <h2>1. 執行摘要 (Executive Summary)</h2>
+            <p>本次針對版本 <b>v2.5.0</b> 進行高強度回歸測試。透過自動化腳本模擬 1,250,000 次 Spins，驗證核心遊戲邏輯。計算公式如下：</p>
+            <div style="text-align: center; padding: 1rem; background: #f8fafc; border-radius: 8px;">
+                $$RTP = \frac{\sum \text{Wins}}{\sum \text{Bets}} \times 100\%$$
+            </div>
+            <p style="margin-top:1rem;">當前測試結果顯示系統 RTP 處於理想收斂區間，數值穩定性達標。</p>
+        </section>
 
-    <section>
-        <h2>2. 技術規格與環境 (Technical Environment)</h2>
-        <div class="table-wrapper">
+        <div class="kpi-row">
+            <div class="kpi-card"><span class="kpi-value">1.25M</span><div class="kpi-label">總回測樣本</div></div>
+            <div class="kpi-card"><span class="kpi-value" style="color: var(--success);">96.02%</span><div class="kpi-label">實際 RTP</div></div>
+            <div class="kpi-card"><span class="kpi-value" style="color: var(--danger);">10</span><div class="kpi-label">攔截 Bug 數</div></div>
+            <div class="kpi-card"><span class="kpi-value">0.8s</span><div class="kpi-label">平均響應時間</div></div>
+        </div>
+
+        <div class="chart-section" id="charts">
+            <div class="chart-card">
+                <h3>測試案例分佈 (Test Case Distribution)</h3>
+                <canvas id="pieChart"></canvas>
+            </div>
+            <div class="chart-card">
+                <h3>RTP 收斂趨勢 (RTP Convergence Trend)</h3>
+                <canvas id="lineChart"></canvas>
+            </div>
+        </div>
+
+        <section id="environment">
+            <h2>2. 測試環境 (Test Environment)</h2>
             <table>
                 <tr>
-                    <th>測試機台</th>
-                    <td>QA-Auto-Runner-04 (Cloud Instance)</td>
-                    <th>資料來源</th>
-                    <td>Staging DB (MySQL v8.0)</td>
+                    <th>OS / Device</th>
+                    <td>Windows 11 / Automated Runner Instance</td>
+                    <th>DB Source</th>
+                    <td>Staging Read-only Replica</td>
                 </tr>
                 <tr>
-                    <th>自動化框架</th>
-                    <td>Pytest + Playwright + Allure</td>
-                    <th>核心算法</th>
-                    <td>Mersenne Twister (RNG 驗證)</td>
+                    <th>Framework</th>
+                    <td>Python 3.10 + Playwright 1.42</td>
+                    <th>RNG Seed</th>
+                    <td>Secure Random (Deterministic Mode)</td>
                 </tr>
             </table>
-        </div>
-    </section>
+        </section>
 
-    <section>
-        <h2>3. 關鍵缺陷分析 (Critical Defects)</h2>
-        <div class="table-wrapper">
+        <section id="defects">
+            <h2>3. 詳細缺陷分析 (Defect Analysis)</h2>
             <table>
                 <thead>
                     <tr>
-                        <th>編號</th>
+                        <th>ID</th>
                         <th>模組</th>
                         <th>異常描述</th>
-                        <th>嚴重程度</th>
-                        <th>當前狀態</th>
+                        <th>嚴重度</th>
+                        <th>狀態</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td>#BUG-882</td>
-                        <td>金融系統</td>
-                        <td>玩家在斷線重連後，追殺局補償金未正確入庫</td>
-                        <td><span class="badge badge-danger">嚴重 (Critical)</span></td>
-                        <td>修復中</td>
+                        <td>#BUG-101</td>
+                        <td>追殺機制</td>
+                        <td>高勝率觸發後 Session 狀態未清除</td>
+                        <td style="color:var(--danger); font-weight:700;">Critical</td>
+                        <td><span class="badge badge-fail">Open</span></td>
                     </tr>
                     <tr>
-                        <td>#BUG-885</td>
-                        <td>UI 顯示</td>
-                        <td>勝率超過 15% 時，警示燈號顏色渲染錯誤</td>
-                        <td><span class="badge badge-warning">一般 (Major)</span></td>
-                        <td>已指派</td>
+                        <td>#BUG-105</td>
+                        <td>多語系</td>
+                        <td>泰語語系下按鈕文字發生溢出</td>
+                        <td>Minor</td>
+                        <td><span class="badge badge-pass">Fixed</span></td>
                     </tr>
                     <tr>
-                        <td>#BUG-890</td>
-                        <td>數值平衡</td>
-                        <td>新手教學關卡之掉落機率與設定檔不符</td>
-                        <td><span class="badge badge-success">輕微 (Minor)</span></td>
-                        <td>已修復</td>
+                        <td>#BUG-109</td>
+                        <td>連線穩定</td>
+                        <td>網路波動時偶發性 WebSocket 斷線</td>
+                        <td>Major</td>
+                        <td><span class="badge badge-fail">Pending</span></td>
                     </tr>
                 </tbody>
             </table>
-        </div>
-    </section>
+        </section>
 
-    <section>
-        <h2>4. 自動化執行效率 (Automation Efficiency)</h2>
-        <div style="margin-bottom: 1.5rem;">
-            <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
-                <span>核心邏輯測試 (Core Logic)</span>
-                <span>100%</span>
-            </div>
-            <div class="progress-bar"><div class="progress-fill" style="width: 100%; background: var(--success);"></div></div>
-        </div>
-        <div style="margin-bottom: 1.5rem;">
-            <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
-                <span>介面壓力測試 (UI Stress)</span>
-                <span>75%</span>
-            </div>
-            <div class="progress-bar"><div class="progress-fill" style="width: 75%; background: var(--accent);"></div></div>
-        </div>
-    </section>
+        <section id="risk">
+            <h2>4. 風險評估與建議 (Risk & Conclusion)</h2>
+            <p>目前雖然 **RTP 收斂穩定**，但 **#BUG-101** 的狀態鎖定問題可能導致玩家數據不同步。強烈建議在修復該項目後再進行上線。自動化腳本已部署至 Jenkins 進行每日監控。</p>
+        </section>
+    </div>
 
-    <section style="background: #f1f5f9; border: none;">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div>
-                <p style="font-size: 0.75rem; color: var(--secondary); margin: 0;">測試執行人</p>
-                <p style="font-weight: 700; margin: 0;">Rose Chang</p>
-            </div>
-            <div style="text-align: right;">
-                <p style="font-size: 0.75rem; color: var(--secondary); margin: 0;">報告產生時間</p>
-                <p style="font-weight: 700; margin: 0;">2026-04-27 11:00 (UTC+8)</p>
-            </div>
-        </div>
-    </section>
-</div>
+    <footer>
+        <p>&copy; 2026 Rose Chang | 內部機密數據 - 請勿外流</p>
+    </footer>
+</main>
 
-<footer>
-    <p>Confidential - Internal Use Only | Powered by Python Automation Tools</p>
-</footer>
+<script>
+    // 圓餅圖
+    new Chart(document.getElementById('pieChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Passed', 'Failed', 'Skipped'],
+            datasets: [{
+                data: [95, 3, 2],
+                backgroundColor: ['#10b981', '#ef4444', '#f59e0b']
+            }]
+        },
+        options: { plugins: { legend: { position: 'bottom' } } }
+    });
+
+    // 折線圖
+    new Chart(document.getElementById('lineChart'), {
+        type: 'line',
+        data: {
+            labels: ['10k', '50k', '100k', '500k', '1M', '1.25M'],
+            datasets: [{
+                label: 'RTP %',
+                data: [94.2, 95.5, 96.3, 96.1, 96.05, 96.02],
+                borderColor: '#6366f1',
+                tension: 0.3,
+                fill: true,
+                backgroundColor: 'rgba(99, 102, 241, 0.1)'
+            }]
+        }
+    });
+</script>
 
 </body>
 </html>
