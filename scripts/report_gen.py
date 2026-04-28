@@ -1,6 +1,7 @@
 """
 報表生成模組 - 負責生成專業的 HTML 儀表板及其內部樣式
 """
+import os
 import json
 from datetime import datetime
 from config import STATUS_WEIGHTS
@@ -232,10 +233,43 @@ def generate_dashboard_html(summary_data, test_period, risk_dist):
             options: {{ responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: {{ legend: {{ display: false }} }} }}
         }});
     </script>
+    <a href="../index.html" class="back-home-btn">🏠 返回目錄</a>
+    <style>
+        .back-home-btn {{
+            position: fixed;
+            bottom: 400px;
+            left: 15px;
+            padding: 12px 24px;
+            background: #1e293b;
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 9999;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }}
+        .back-home-btn:hover {{
+            background: #0f172a;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }}
+    </style>
 </body>
 </html>
 """
-    output_path = 'QA_Dashboard.html'
+# 確保 reports 資料夾存在，若不存在則建立一個
+    if not os.path.exists('reports'):
+        os.makedirs('reports')
+
+    # 設定產出的路徑與檔名，對應 GitHub Pages 的連結
+    output_path = 'reports/api_analysis_dashboard.html'
+    
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(html_template)
+        
+    print(f"[SUCCESS] 報表已存至: {output_path}")
     return output_path

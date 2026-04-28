@@ -4,7 +4,13 @@
 import os
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
-from config import SERVICE_ACCOUNT_FILE, GOOGLE_SHEET_NAME
+from config import GOOGLE_SHEET_NAME
+
+# 取得目前這份程式碼檔案所在的資料夾路徑 (即 scripts 資料夾)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# 重新定義路徑，確保它指向 scripts 裡面的 json 檔
+SERVICE_ACCOUNT_FILE = os.path.join(BASE_DIR, 'service_account.json')
 
 class SheetSyncManager:
     def __init__(self, sheet_name=GOOGLE_SHEET_NAME):
