@@ -75,7 +75,3 @@ def pytest_generate_tests(metafunc):
     if "game_info" in metafunc.fixturenames:
         metafunc.parametrize("game_info", S_ROWS, ids=[r["遊戲名稱"] for r in S_ROWS])
 
-def pytest_sessionfinish(session, exitstatus):
-    """在測試結束時，生成與題目一完全相同的 HTML 報表"""
-    html_path = generate_dashboard_html(S_ROWS, PERIOD, DIST)
-    print(f"\n[INFO] 已同步生成儀表板 HTML 報表: {html_path}")

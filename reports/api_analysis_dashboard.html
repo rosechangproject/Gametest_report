@@ -41,7 +41,7 @@
                             <span class="font-bold text-slate-600">測試期間：</span>
                             <span class="bg-slate-200 px-2 py-0.5 rounded text-slate-700">2026-01-29 09:19:56 ~ 2026-01-29 23:58:20</span>
                         </p>
-                        <p class="text-slate-400 text-xs">報表產出時間：2026-04-29 10:52:04</p>
+                        <p class="text-slate-400 text-xs">報表產出時間：2026-04-29 17:08:19</p>
                     </div>
                 </div>
                 <div class="flex gap-4 items-center">
@@ -311,16 +311,19 @@
     </script>
     <a href="../index.html" class="back-home-btn">🏠 返回目錄</a>
     <style>
+        /* 找到 report_gen.py 中的 .back-home-btn 樣式 */
         .back-home-btn {
             position: fixed;
-            bottom: 400px;
-            left: 15px;
-            padding: 12px 24px;
+            bottom: 30px;        /* 👈 確保與 Allure 端的 20px 一致 */
+            right: 20px;
+            padding: 10px 22px;  /* 👈 統一內距，讓按鈕看起來一樣大 */
             background: #1e293b;
             color: white;
             text-decoration: none;
             border-radius: 50px;
-            font-weight: bold;
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            font-size: 14px;     /* 👈 強制設定字級 */
+            font-weight: 700;     /* 👈 強制設定粗體 */
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             z-index: 9999;
             transition: all 0.3s;
@@ -328,6 +331,7 @@
             align-items: center;
             gap: 8px;
         }
+        
         .back-home-btn:hover {
             background: #0f172a;
             transform: translateY(-3px);

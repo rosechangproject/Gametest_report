@@ -10,7 +10,7 @@ from config import PROJECT_TITLE, DASHBOARD_HTML_PATH, REPORT_DIR_PATH
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def generate_dashboard_html(summary_data, test_period, risk_dist):
-    """生成包含圖表與 PDF 匯出功能的 QA_Dashboard.html"""
+    """生成包含圖表與 PDF 匯出功能的 api_analysis_dashboard.html""" # 👈 把檔名改對
     logging.info("[UI] 正在生成視覺化儀表板...")
     
     now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -231,16 +231,19 @@ def generate_dashboard_html(summary_data, test_period, risk_dist):
     </script>
     <a href="../index.html" class="back-home-btn">🏠 返回目錄</a>
     <style>
+        /* 找到 report_gen.py 中的 .back-home-btn 樣式 */
         .back-home-btn {{
             position: fixed;
-            bottom: 400px;
-            left: 15px;
-            padding: 12px 24px;
+            bottom: 30px;        /* 👈 確保與 Allure 端的 20px 一致 */
+            right: 20px;
+            padding: 10px 22px;  /* 👈 統一內距，讓按鈕看起來一樣大 */
             background: #1e293b;
             color: white;
             text-decoration: none;
             border-radius: 50px;
-            font-weight: bold;
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            font-size: 14px;     /* 👈 強制設定字級 */
+            font-weight: 700;     /* 👈 強制設定粗體 */
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             z-index: 9999;
             transition: all 0.3s;
@@ -248,6 +251,7 @@ def generate_dashboard_html(summary_data, test_period, risk_dist):
             align-items: center;
             gap: 8px;
         }}
+        
         .back-home-btn:hover {{
             background: #0f172a;
             transform: translateY(-3px);
