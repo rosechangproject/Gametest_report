@@ -1,17 +1,17 @@
-# 遊戲自動化測試監控與回測工具組 (Game QA Monitoring & Analysis Suite)
+## 遊戲自動化測試監控與回測工具組 (Game QA Monitoring & Analysis Suite)
 
 本專案是一個整合性的自動化測試解決方案，專為遊戲開發中的數據監控與數值回測需求而設計。透過自動化流程替代人工查核，實現從 API 抓取、風險分析到多平台報表同步的完整閉環。
 
-## 🚀 專案核心亮點
+### 🚀 專案核心亮點
 
 * **自動化資料流水線 (Data Pipeline)**：從即時 API 抓取資料，經由邏輯層清洗與分析，最終同步至雲端與本地端。
 * **專業風險判定邏輯**：針對遊戲「追殺局」設計異常偵測機制，自動標示勝率異常（>5%）與樣本數不足之風險。
 * **工程化架構重構**：全案經過架構解耦（Decoupling），實現「單一事實來源（Single Source of Truth）」，提升系統維護性與可擴充性。
 * **多維度視覺化產出**：支援響應式 HTML 儀表板、PDF 報告下載以及 Google Sheets 雲端即時同步。
 
-## 📂 專案模組說明
+### 📂 專案模組說明
 
-### 題目一：遊戲追殺局風險監控與雲端同步
+#### 題目一：遊戲追殺局風險監控與雲端同步
 這是一個高度自動化的監控模組，確保營運數據符合預期邏輯。
 * **技術實現**：
     * 使用 `Requests` 進行多來源 API 資料抓取。
@@ -19,13 +19,13 @@
     * 整合 `Google Sheets API` 實作自動化雲端資料更新。
 * **特色**：具備強韌的路徑處理機制，支援在任何執行目錄下穩定運行。
 
-### 題目二：遊戲數值回測監控 Dashboard
+#### 題目二：遊戲數值回測監控 Dashboard
 針對遊戲回測數據進行長期監控與比對。
 * **技術實現**：
     * 結構化報表呈現，提供清晰的導覽介面。
     * 整合 Allure 或自定義 HTML 報表，確保測試結果具備可追蹤性。
 
-## 🏗️ 系統架構與技術細節
+### 🏗️ 系統架構與技術細節
 
 本專案遵循軟體工程最佳實踐進行開發：
 
@@ -51,15 +51,15 @@ DevOps: Git (Conventional Commits), Logging (系統日誌紀錄)
 Frontend: HTML5, CSS3 (Responsive Design)
 
 🛠️ 快速開始
-### 1. 安裝必要環境
+#### 1. 安裝必要環境
 ```bash
 pip install pandas requests google-api-python-client google-auth-httplib2 google-auth-oauthlib
 ```
 
-### 2. 設定憑證
+#### 2. 設定憑證
 將 Google Service Account 憑證放入 scripts/ 並更名為 service_account.json。
 
-### 3. 執行分析
+#### 3. 執行分析
 ```bash
 python scripts/main.py
 ```
