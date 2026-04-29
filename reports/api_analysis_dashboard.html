@@ -41,7 +41,7 @@
                             <span class="font-bold text-slate-600">測試期間：</span>
                             <span class="bg-slate-200 px-2 py-0.5 rounded text-slate-700">2026-01-29 09:19:56 ~ 2026-01-29 23:58:20</span>
                         </p>
-                        <p class="text-slate-400 text-xs">報表產出時間：2026-04-28 10:32:43</p>
+                        <p class="text-slate-400 text-xs">報表產出時間：2026-04-29 10:52:04</p>
                     </div>
                 </div>
                 <div class="flex gap-4 items-center">
@@ -264,7 +264,7 @@
             const element = document.getElementById('dashboard-content');
             const opt = {
                 margin: 5, 
-                filename: 'QA_Risk_Report_20260428.pdf',
+                filename: 'QA_Risk_Report_20260429.pdf',
                 image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { scale: 2, useCORS: true, logging: false, letterRendering: true, ignoreElements: (el) => el.id === 'export-btn' },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
@@ -309,12 +309,12 @@
             options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { display: false } } }
         });
     </script>
-    <a href="../index.html" class="back-home-btn">🏠 返回目錄總覽</a>
+    <a href="../index.html" class="back-home-btn">🏠 返回目錄</a>
     <style>
         .back-home-btn {
             position: fixed;
-            bottom: 30px;
-            left: 30px;
+            bottom: 400px;
+            left: 15px;
             padding: 12px 24px;
             background: #1e293b;
             color: white;

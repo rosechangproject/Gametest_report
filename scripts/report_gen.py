@@ -3,21 +3,17 @@
 """
 import os
 import json
+import logging
 from datetime import datetime
-from config import STATUS_WEIGHTS
+from config import PROJECT_TITLE, DASHBOARD_HTML_PATH, REPORT_DIR_PATH
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def generate_dashboard_html(summary_data, test_period, risk_dist):
     """生成包含圖表與 PDF 匯出功能的 QA_Dashboard.html"""
-    print("[UI] 正在生成視覺化儀表板...")
+    logging.info("[UI] 正在生成視覺化儀表板...")
     
     now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    
-    # 核心排序：根據 STATUS_WEIGHTS 權重排序
-    sorted_summary = sorted(summary_data, key=lambda x: (
-        STATUS_WEIGHTS.get(x["分析結果"], 99), 
-        -x["勝率"], 
-        x["遊戲名稱"]
-    ))
     
     # 統計數據
     total_games = len(summary_data)
@@ -26,13 +22,13 @@ def generate_dashboard_html(summary_data, test_period, risk_dist):
     normal_count = risk_dist.get("正常數據", 0)
     
     # 圖表數據準備
-    labels = [r["遊戲名稱"] for r in sorted_summary]
-    data_points = [round(r["勝率"] * 100, 2) for r in sorted_summary]
+    labels = [r["遊戲名稱"] for r in summary_data]
+    data_points = [round(r["勝率"] * 100, 2) for r in summary_data]
     
     # 動態顏色配比
     bar_colors = []
     bar_borders = []
-    for r in sorted_summary:
+    for r in summary_data:
         if r["分析結果"] == "異常":
             bar_colors.append("rgba(239, 68, 68, 0.8)")
             bar_borders.append("#ef4444")
@@ -49,7 +45,7 @@ def generate_dashboard_html(summary_data, test_period, risk_dist):
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>遊戲追殺局風險監控儀表板</title>
+    <title>{PROJECT_TITLE}</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -80,7 +76,7 @@ def generate_dashboard_html(summary_data, test_period, risk_dist):
                         <span class="bg-blue-600 text-white px-3 py-1 rounded-md text-sm font-bold inline-block">LIVE MONITOR</span>
                         <span class="text-xs text-slate-400 font-medium">版本 2.5 - 模組化穩定版</span>
                     </div>
-                    <h1 class="text-3xl font-bold text-slate-800">遊戲追殺局風險監控儀表板</h1>
+                    <h1 class="text-3xl font-bold text-slate-800">{PROJECT_TITLE}</h1>
                     <div class="mt-2 space-y-1">
                         <p class="text-slate-500 text-sm flex items-center gap-2">
                             <span class="font-bold text-slate-600">測試期間：</span>
@@ -172,7 +168,7 @@ def generate_dashboard_html(summary_data, test_period, risk_dist):
                                 </span>
                             </td>
                         </tr>
-                        ''' for r in sorted_summary])}
+                        ''' for r in summary_data])}
                     </tbody>
                 </table>
             </div>
@@ -261,15 +257,16 @@ def generate_dashboard_html(summary_data, test_period, risk_dist):
 </body>
 </html>
 """
-# 確保 reports 資料夾存在，若不存在則建立一個
-    if not os.path.exists('reports'):
-        os.makedirs('reports')
-
-    # 設定產出的路徑與檔名，對應 GitHub Pages 的連結
-    output_path = 'reports/api_analysis_dashboard.html'
-    
-    with open(output_path, 'w', encoding='utf-8') as f:
-        f.write(html_template)
-        
-    print(f"[SUCCESS] 報表已存至: {output_path}")
-    return output_path
+    try:
+        # 確保 reports 資料夾存在
+        if not os.path.exists(REPORT_DIR_PATH):
+            os.makedirs(REPORT_DIR_PATH)
+            
+        with open(DASHBOARD_HTML_PATH, 'w', encoding='utf-8') as f:
+            f.write(html_template)
+            
+        logging.info(f"[SUCCESS] 報表已存至: {DASHBOARD_HTML_PATH}")
+        return DASHBOARD_HTML_PATH
+    except Exception as e:
+        logging.error(f"[ERROR] 產生 HTML 儀表板失敗: {e}")
+        return None

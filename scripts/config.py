@@ -1,6 +1,30 @@
+import os
+
 """
 中央設定模組 - 收集所有專案變數與判定閾值
 """
+
+# ========================== 路徑與檔案名稱設定 ==========================
+SCRIPTS_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.dirname(SCRIPTS_DIR)
+
+# 檔案名稱統一定義
+WINLOSE_FILE_NAME = "winlose.json"
+USERMONEY_FILE_NAME = "usermoney.json"
+REPORT_DIR_NAME = "reports"
+DASHBOARD_FILE_NAME = "api_analysis_dashboard.html"
+SERVICE_ACCOUNT_FILE_NAME = "service_account.json"
+
+# 動態絕對路徑
+WINLOSE_LOCAL_PATH = os.path.join(SCRIPTS_DIR, WINLOSE_FILE_NAME)
+USERMONEY_LOCAL_PATH = os.path.join(SCRIPTS_DIR, USERMONEY_FILE_NAME)
+REPORT_DIR_PATH = os.path.join(BASE_DIR, REPORT_DIR_NAME)
+DASHBOARD_HTML_PATH = os.path.join(REPORT_DIR_PATH, DASHBOARD_FILE_NAME)
+SERVICE_ACCOUNT_PATH = os.path.join(SCRIPTS_DIR, SERVICE_ACCOUNT_FILE_NAME)
+
+# ========================== 專案標題設定 ==========================
+PROJECT_TITLE = "遊戲追殺局風險監控儀表板"
+GOOGLE_SHEET_NAME = PROJECT_TITLE
 
 # ========================== 核心連線設定 ==========================
 # Google Sheets WebApp 網址 (用於儀表板快速入口)
@@ -27,10 +51,6 @@ STATUS_WEIGHTS = {
 
 # 最終定義：殺局房型
 CHASING_TYPES = ['B', 'T', 'K', 'ptk', 'PTK']
-
-# ========================== 雲端同步設定 ==========================
-GOOGLE_SHEET_NAME = "QA測試分析報告"
-SERVICE_ACCOUNT_FILE = "service_account.json"
 
 # 試算表欄位翻譯對照
 COLUMN_MAP = {
