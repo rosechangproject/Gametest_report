@@ -5,27 +5,28 @@ import pytest
 import json
 from pathlib import Path
 
-# 1. 橋接練習資料夾的模組
-PRACTICE_DIR = r"c:\Users\rose.chang\Desktop\練習"
-if PRACTICE_DIR not in sys.path:
-    sys.path.append(PRACTICE_DIR)
+# 1. 橋接根目錄的模組 (動態路徑)
+SCRIPTS_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if SCRIPTS_DIR not in sys.path:
+    sys.path.append(SCRIPTS_DIR)
 
 try:
     from data_analyzer import fetch_raw_data, analyze_risk_data
     from config import API_CONFIG
-except ImportError:
+    from report_gen import generate_dashboard_html
+except ImportError as e:
     # 預防路徑問題
-    raise ImportError(f"無法從 {PRACTICE_DIR} 載入分析模組，請確認目錄路徑是否正確。")
+    raise ImportError(f"載入模組失敗: {e}，請確認目錄路徑是否正確。")
 
 # 2. 在 Session 層級執行一次分析
 def get_risk_data():
     wl_data = fetch_raw_data("winlose", API_CONFIG["winlose"])
     mo_data = fetch_raw_data("usermoney", API_CONFIG["usermoney"])
     f_rows, s_rows, det_rows, period, dist = analyze_risk_data(wl_data, mo_data)
-    return f_rows, s_rows, det_rows, period
+    return f_rows, s_rows, det_rows, period, dist
 
 # 獲取分析結果
-F_ROWS, S_ROWS, DET_ROWS, PERIOD = get_risk_data()
+F_ROWS, S_ROWS, DET_ROWS, PERIOD, DIST = get_risk_data()
 
 @allure.epic("遊戲風險監控報告")
 class TestGameRisk:
@@ -73,3 +74,8 @@ def pytest_generate_tests(metafunc):
     """動態生成測試案例，每個遊戲一個"""
     if "game_info" in metafunc.fixturenames:
         metafunc.parametrize("game_info", S_ROWS, ids=[r["遊戲名稱"] for r in S_ROWS])
+
+def pytest_sessionfinish(session, exitstatus):
+    """在測試結束時，生成與題目一完全相同的 HTML 報表"""
+    html_path = generate_dashboard_html(S_ROWS, PERIOD, DIST)
+    print(f"\n[INFO] 已同步生成儀表板 HTML 報表: {html_path}")

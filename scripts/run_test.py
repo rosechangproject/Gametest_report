@@ -1,13 +1,15 @@
 import os
 import shutil
 import subprocess
-from datetime import datetime
 from pathlib import Path
+
+# 引入 config.py 的動態路徑設定
+from config import SCRIPTS_DIR, BASE_DIR
 
 def run_api_tests():
     """執行風險監控測試並全自動生成報告"""
-    results_dir = Path("./allure-results")
-    report_dir = Path("./allure-report")
+    results_dir = Path(BASE_DIR) / "allure-results"
+    report_dir = Path(BASE_DIR) / "allure-report"
     
     # 1. 強制清理舊數據 (確保報告不會顯示 0 或舊測項)
     print("正在清理舊的測試數據...")
@@ -21,9 +23,10 @@ def run_api_tests():
 
     print("開始執行遊戲風險監控分析...")
     # 只執行風險分析測試，並將結果存入 results_dir
+    test_file_path = Path(SCRIPTS_DIR) / "test_case" / "test_risk_report.py"
     cmd_pytest = [
         "pytest",
-        "test_case/test_risk_report.py",
+        str(test_file_path),
         "--alluredir", str(results_dir)
     ]
     test_result = subprocess.run(cmd_pytest).returncode
