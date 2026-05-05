@@ -26,21 +26,22 @@
         .project-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
         .project-title { font-size: 1.4rem; color: var(--primary-color); margin: 0; }
         .tech-tag { background: #e8f4fd; color: #3498db; padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; }
+        
         .btn { 
-    display: inline-flex; 
-    align-items: center; 
-    justify-content: center; 
-    background: var(--accent-color); 
-    color: white; 
-    padding: 10px 20px; 
-    border-radius: 6px; 
-    text-decoration: none; 
-    transition: 0.2s; 
-    font-weight: bold; 
-    min-width: 200px; /* 🚀 統一設定為 200px，這樣最整齊 */
-}
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+            background: var(--accent-color); 
+            color: white; 
+            padding: 10px 20px; 
+            border-radius: 6px; 
+            text-decoration: none; 
+            transition: 0.2s; 
+            font-weight: bold; 
+            min-width: 200px; 
+        }
         .btn:hover { background: #2980b9; transform: translateY(-2px); }
-        .footer { color: #95a5a6; font-size: 0.9rem; text-align: center; margin-top: 50px; }
+        .footer { color: #95a5a6; font-size: 0.9rem; text-align: center; margin-top: 50px; padding-bottom: 20px; }
     </style>
 </head>
 <body>
@@ -50,13 +51,13 @@
     <a href="#" class="nav-link active">🏠 首頁總覽</a>
     <a href="reports/api_analysis_dashboard.html" class="nav-link">📈 API 數據統計</a>
     <a href="https://docs.google.com/spreadsheets/d/1sjFA2EptYqLX3KBy24WrCqwScTkmXz-jR_1adKeSqxQ" target="_blank" 
-   style="padding-left: 45px; font-size: 0.8em; color: #94a3b8; text-decoration: none; display: block; margin-top: -5px; margin-bottom: 10px;">
-    └ 🔗 雲端試算表連結
-</a>
+       style="padding-left: 45px; font-size: 0.8em; color: #94a3b8; text-decoration: none; display: block; margin-top: -5px; margin-bottom: 10px;">
+        └ 🔗 雲端試算表連結
+    </a>
     <a href="reports/allure-report.html" class="nav-link">📊 遊戲數值監控</a>
 
     <a href="https://jira-bug-stats.onrender.com" class="nav-link" target="_blank">
-    🐞 Jira Bug 數據統計
+        🐞 Jira Bug 數據統計
     </a>
 
     <div style="margin-top: 50px; padding: 15px; font-size: 0.8rem; background: rgba(255,255,255,0.1); border-radius: 8px;">
@@ -68,56 +69,47 @@
     <h1>Rose 的 QA 自動化測試練習</h1>
     <p>這裡記錄了我從 API 分析、數據統計到自動化部署的學習歷程。每個專案都整合了 Python 腳本分析與前端視覺化呈現。</p>
     
+    <!-- 📦 題目一 -->
     <div class="project-section">
         <div class="project-header">
             <h3 class="project-title">題目一：API 資料統計與分析報告</h3>
             <span class="tech-tag">Python / JSON / Data Analysis</span>
         </div>
-
-        <div class="project-section" style="margin-top: 40px;">
-            <div class="project-header">
-                <h3 class="project-title">題目二 — 📊 Jira Bug 數據自動化統計工具</h3>
-                <span class="tech-tag">Python / Flask / Jira API / Pandas</span>
-            </div>
-            <p><strong>練習目的：</strong> 解決手動統計 Bug 的耗時問題，透過 API 自動化抓取數據並產出視覺化報表與 Excel。</p>
-            <p><strong>技術重點：</strong> 串接 Jira REST API、環境變數資安管理、支援雲端與內網雙模式執行、自動化 Excel 報表生成。</p>
-            <div style="display: flex; gap: 15px; margin-top: 25px; align-items: center;">
-                <a href="https://jira-bug-stats.onrender.com" class="btn" target="_blank">
-                    🚀 進入展示頁面
-                </a>
-            </div>
-        </div>
-
         <p><strong>練習目的：</strong> 運用 Python 腳本自動化處理原始 API 資料，將複雜的欄位資訊轉化為易於閱讀的格式，並透過雲端同步提升資料管理效率。</p>
-        <p><strong>技術重點：</strong> 使用 Antigravity 框架撰寫自動化腳本，實作英文欄位自動翻譯為繁體中文並進行資料格式化。整合 AI 運算邏輯 針對「追殺局」玩家贏錢比例進行精確計算，並設定超過 5% 的特殊警示機制。最後透過 API 將處理後的資料自動發佈至 Google Sheets 雲端試算表。</p>
+        <p><strong>技術重點：</strong> 使用 Antigravity 框架撰寫自動化腳本，實作英文欄位自動翻譯為繁體中文並進行資料格式化。整合 AI 運算邏輯，針對「追殺局」玩家贏錢比例進行精確計算並設定警示機制。</p>
         <div style="display: flex; gap: 15px; margin-top: 25px; align-items: center;">
-    <a href="reports/api_analysis_dashboard.html" class="btn" 
-       style="margin: 0; justify-content: center; align-items: center; text-decoration: none;">
-        進入查看成果 →
-    </a>
+            <a href="reports/api_analysis_dashboard.html" class="btn">進入查看成果 →</a>
+            <a href="https://docs.google.com/spreadsheets/d/1sjFA2EptYqLX3KBy24WrCqwScTkmXz-jR_1adKeSqxQ" target="_blank" class="btn" style="background-color: #28a745;">
+                📊 查看 Google 試算表
+            </a>
+        </div>
+    </div>
 
-    <a href="https://docs.google.com/spreadsheets/d/1sjFA2EptYqLX3KBy24WrCqwScTkmXz-jR_1adKeSqxQ" 
-       target="_blank" class="btn" 
-       style="margin: 0; background-color: #28a745; border-color: #218838; justify-content: center; align-items: center; gap: 8px; text-decoration: none;">
-        📊 查看 Google 試算表
-    </a>
-</div>
-</div>
-
+    <!-- 📦 題目二 -->
     <div class="project-section">
         <div class="project-header">
-            <h3 class="project-title">題目二：遊戲數值回測監控Dashboard</h3>
+            <h3 class="project-title">題目二：Jira Bug 數據自動化統計工具</h3>
+            <span class="tech-tag">Python / Flask / Jira API / Pandas</span>
+        </div>
+        <p><strong>練習目的：</strong> 解決手動統計 Bug 的耗時問題，透過 API 自動化抓取數據並產出視覺化報表與 Excel。</p>
+        <p><strong>技術重點：</strong> 串接 Jira REST API、環境變數資安管理、支援雲端演示模式與內網真實模式雙切換。</p>
+        <div style="display: flex; gap: 15px; margin-top: 25px; align-items: center;">
+            <a href="https://jira-bug-stats.onrender.com" class="btn" target="_blank">🚀 進入展示頁面</a>
+        </div>
+    </div>
+
+    <!-- 📦 題目三 -->
+    <div class="project-section">
+        <div class="project-header">
+            <h3 class="project-title">題目三：遊戲數值回測監控 Dashboard</h3>
             <span class="tech-tag">Python / HTML / GitHub Pages</span>
         </div>
         <p><strong>練習目的：</strong> 將測試產出的原始資料轉化為結構化的視覺報表，提供團隊清晰、具備高度回溯價值的品質監控成果。</p>
-        <p><strong>技術重點：</strong> 串接前段處理完成的資料並套用 Allure 報表框架，實作完整的欄位映射與 Log 紀錄整合。確保報表中的每一項數值與執行歷程均有跡可循，產出資訊明確、易於判讀的專業自動化測試報告。</p>
+        <p><strong>技術重點：</strong> 串接前段處理完成的資料並套用 Allure 報表框架，實作完整的欄位映射與 Log 紀錄整合。</p>
         <div style="display: flex; gap: 15px; margin-top: 25px; align-items: center;">
-    <a href="reports/allure-report.html" class="btn" 
-       style="margin: 0; min-width: 200px; display: inline-flex; justify-content: center; align-items: center; text-decoration: none;">
-        進入查看成果 →
-    </a>
-</div>
-
+            <a href="reports/allure-report.html" class="btn">進入查看成果 →</a>
+        </div>
+    </div>
 
     <div class="footer">
         © 2026 Rose Chang - QA Automation Journey
