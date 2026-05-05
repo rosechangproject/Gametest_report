@@ -6,7 +6,8 @@
     <title>Rose | QA 自動化練習彙整</title>
     <style>
         :root {
-            --sidebar-width: 260px;
+            /* 💡 將側邊欄寬度從 260px 增加到 300px，確保文字不換行 */
+            --sidebar-width: 300px;
             --primary-color: #2c3e50;
             --accent-color: #3498db;
             --bg-color: #f4f7f6;
@@ -16,7 +17,17 @@
         /* 左側導覽列 */
         .sidebar { width: var(--sidebar-width); background: var(--primary-color); color: white; height: 100vh; position: fixed; padding: 20px; box-sizing: border-box; }
         .sidebar h2 { font-size: 1.2rem; border-bottom: 1px solid #5d6d7e; padding-bottom: 15px; margin-bottom: 20px; text-align: center; }
-        .nav-link { display: block; color: #bdc3c7; text-decoration: none; padding: 12px 15px; border-radius: 6px; margin-bottom: 10px; transition: 0.3s; }
+        .nav-link { 
+            display: block; 
+            color: #bdc3c7; 
+            text-decoration: none; 
+            padding: 12px 15px; 
+            border-radius: 6px; 
+            margin-bottom: 10px; 
+            transition: 0.3s; 
+            font-size: 0.95rem; /* 稍微放大一點，讓閱讀更清晰 */
+            white-space: nowrap; /* 🚀 強制不換行 */
+        }
         .nav-link:hover { background: #34495e; color: white; }
         .nav-link.active { background: var(--accent-color); color: white; }
 
@@ -54,10 +65,13 @@
        style="padding-left: 45px; font-size: 0.8em; color: #94a3b8; text-decoration: none; display: block; margin-top: -5px; margin-bottom: 10px;">
         └ 🔗 雲端試算表連結
     </a>
+    
+    <!-- 題目二對應的連結 -->
     <a href="reports/allure-report.html" class="nav-link">📊 遊戲數值監控</a>
 
+    <!-- 題目三對應的連結 -->
     <a href="https://jira-bug-stats.onrender.com" class="nav-link" target="_blank">
-        🐞 Jira Bug 數據統計
+        🧙‍♂️ QA Team Jira Bug開單數量統計
     </a>
 
     <div style="margin-top: 50px; padding: 15px; font-size: 0.8rem; background: rgba(255,255,255,0.1); border-radius: 8px;">
@@ -85,29 +99,29 @@
         </div>
     </div>
 
-    <!-- 📦 題目二 -->
+    <!-- 📦 題目二：Dashboard -->
     <div class="project-section">
         <div class="project-header">
-            <h3 class="project-title">題目二：Jira Bug 數據自動化統計工具</h3>
-            <span class="tech-tag">Python / Flask / Jira API / Pandas</span>
-        </div>
-        <p><strong>練習目的：</strong> 解決手動統計 Bug 的耗時問題，透過 API 自動化抓取數據並產出視覺化報表與 Excel。</p>
-        <p><strong>技術重點：</strong> 串接 Jira REST API、環境變數資安管理、支援雲端演示模式與內網真實模式雙切換。</p>
-        <div style="display: flex; gap: 15px; margin-top: 25px; align-items: center;">
-            <a href="https://jira-bug-stats.onrender.com" class="btn" target="_blank">🚀 進入展示頁面</a>
-        </div>
-    </div>
-
-    <!-- 📦 題目三 -->
-    <div class="project-section">
-        <div class="project-header">
-            <h3 class="project-title">題目三：遊戲數值回測監控 Dashboard</h3>
+            <h3 class="project-title">題目二：遊戲數值回測監控 Dashboard</h3>
             <span class="tech-tag">Python / HTML / GitHub Pages</span>
         </div>
         <p><strong>練習目的：</strong> 將測試產出的原始資料轉化為結構化的視覺報表，提供團隊清晰、具備高度回溯價值的品質監控成果。</p>
         <p><strong>技術重點：</strong> 串接前段處理完成的資料並套用 Allure 報表框架，實作完整的欄位映射與 Log 紀錄整合。</p>
         <div style="display: flex; gap: 15px; margin-top: 25px; align-items: center;">
             <a href="reports/allure-report.html" class="btn">進入查看成果 →</a>
+        </div>
+    </div>
+
+    <!-- 📦 題目三：Jira 工具 -->
+    <div class="project-section">
+        <div class="project-header">
+            <h3 class="project-title">題目三：Jira Bug 數據自動化統計工具</h3>
+            <span class="tech-tag">Python / Flask / Jira API / Pandas</span>
+        </div>
+        <p><strong>練習目的：</strong> 解決手動統計 Bug 的耗時問題，透過 API 自動化抓取數據並產出視覺化報表與 Excel。</p>
+        <p><strong>技術重點：</strong> 串接 Jira REST API、環境變數資安管理、支援雲端演示模式與內網真實模式雙切換。</p>
+        <div style="display: flex; gap: 15px; margin-top: 25px; align-items: center;">
+            <a href="https://jira-bug-stats.onrender.com" class="btn" target="_blank">🚀 進入展示頁面</a>
         </div>
     </div>
 
