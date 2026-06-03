@@ -11,11 +11,14 @@
             --primary-color: #2c3e50;
             --accent-color: #3498db;
             --bg-color: #f4f7f6;
+            --line-green: #2ecc71;
+            --sheet-green: #27ae60;
+            --calendar-blue: #4285f4;
         }
         body { font-family: "Microsoft JhengHei", sans-serif; display: flex; margin: 0; background: var(--bg-color); color: #333; }
         
         /* 左側導覽列 */
-        .sidebar { width: var(--sidebar-width); background: var(--primary-color); color: white; height: 100vh; position: fixed; padding: 20px; box-sizing: border-box; }
+        .sidebar { width: var(--sidebar-width); background: var(--primary-color); color: white; height: 100vh; position: fixed; padding: 20px; box-sizing: border-box; overflow-y: auto; }
         .sidebar h2 { font-size: 1.2rem; border-bottom: 1px solid #5d6d7e; padding-bottom: 15px; margin-bottom: 20px; text-align: center; }
         .nav-link { 
             display: block; 
@@ -25,19 +28,21 @@
             border-radius: 6px; 
             margin-bottom: 10px; 
             transition: 0.3s; 
-            font-size: 0.95rem; /* 稍微放大一點，讓閱讀更清晰 */
+            font-size: 0.95rem; 
             white-space: nowrap; /* 🚀 強制不換行 */
+            cursor: pointer;
         }
         .nav-link:hover { background: #34495e; color: white; }
         .nav-link.active { background: var(--accent-color); color: white; }
 
         /* 右側主要內容 */
-        .main-content { margin-left: var(--sidebar-width); flex: 1; padding: 40px; }
+        .main-content { margin-left: var(--sidebar-width); flex: 1; padding: 40px; box-sizing: border-box; }
         .project-section { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 30px; }
         .project-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
         .project-title { font-size: 1.4rem; color: var(--primary-color); margin: 0; }
-        .tech-tag { background: #e8f4fd; color: #3498db; padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; }
+        .tech-tag { background: #e8f4fd; color: #3498db; padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; margin-left: 10px; }
         
+        /* 👑 執行長最完美、原汁原味全域按鈕格式，完全不變動 */
         .btn { 
             display: inline-flex; 
             align-items: center; 
@@ -53,26 +58,81 @@
         }
         .btn:hover { background: #2980b9; transform: translateY(-2px); }
         .footer { color: #95a5a6; font-size: 0.9rem; text-align: center; margin-top: 50px; padding-bottom: 20px; }
+
+        /* 🚀 頁面路由切換顯示控制類別 */
+        .page-view { display: none; }
+        .page-view.active-view { display: block; }
+
+        /* ==========================================
+           🎨 題目四：2.0 互動沙盒專屬全新樣式
+           ========================================== */
+        .sandbox-container { display: grid; grid-template-columns: 340px 1fr; gap: 20px; margin-top: 25px; }
+        
+        /* 📱 LINE 模擬器 */
+        .mock-phone { background: #74b9ff; border: 12px solid #2d3436; border-radius: 36px; height: 480px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.15); position: relative; }
+        .phone-header { background: #54a0ff; color: white; padding: 12px; text-align: center; font-weight: bold; font-size: 0.9rem; }
+        .chat-body { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background: #74b9ff; }
+        
+        /* 对话泡泡 */
+        .msg { max-width: 75%; padding: 10px 14px; border-radius: 16px; font-size: 0.88rem; line-height: 1.4; word-break: break-all; animation: fadeInUp 0.3s ease both; }
+        .msg.user { background: #a8e6cf; align-self: flex-end; border-top-right-radius: 4px; }
+        .msg.bot { background: white; align-self: flex-start; border-top-left-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        
+        /* 快捷控制面板 */
+        .phone-controls { background: #f5f6fa; padding: 10px; border-top: 1px solid #dcdde1; display: flex; flex-direction: column; gap: 8px; }
+        .ctrl-btn { background: white; border: 1px solid #dcdde1; padding: 8px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; text-align: left; font-weight: bold; transition: 0.2s; color: #475569; }
+        .ctrl-btn:hover:not(:disabled) { background: #edf2f7; border-color: var(--accent-color); color: var(--accent-color); }
+        .ctrl-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* 🖥️ 右側整合 Dashboard 後台 */
+        .mock-backend { display: flex; flex-direction: column; gap: 20px; }
+        .backend-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 15px; box-sizing: border-box; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
+        .card-title { font-size: 0.95rem; font-weight: bold; color: #4a5568; margin-top: 0; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+        
+        /* 📝 Google Sheets 模擬表格 */
+        .sheet-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; text-align: left; background: white; }
+        .sheet-table th { background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; padding: 6px 10px; }
+        .sheet-table td { border: 1px solid #e2e8f0; padding: 6px 10px; color: #334155; transition: all 0.3s; }
+        .sheet-tabs { display: flex; gap: 5px; margin-top: 10px; border-top: 1px solid #e2e8f0; padding-top: 8px; font-size: 0.75rem; }
+        .tab { padding: 4px 10px; background: #f1f5f9; border-radius: 4px; color: #64748b; font-weight: bold; transition: 0.3s; }
+        .tab.active { background: var(--sheet-green); color: white; }
+
+        /* 📅 Google Calendar 模擬日曆 */
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); border: 1px solid #e2e8f0; font-size: 0.75rem; text-align: center; background: white; }
+        .cal-day-header { background: #f8fafc; color: #64748b; font-weight: bold; padding: 6px 0; border-bottom: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; }
+        .cal-day-header:last-child { border-right: none; }
+        .cal-cell { height: 75px; border-right: 1px solid #e2e8f0; padding: 4px; position: relative; box-sizing: border-box; background: #ffffff; transition: background 0.5s; }
+        .cal-cell:last-child { border-right: none; }
+        .cal-event { background: var(--calendar-blue); color: white; font-size: 0.7rem; padding: 2px 4px; border-radius: 3px; font-weight: bold; margin-top: 4px; text-align: left; animation: scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) both; }
+        
+        /* 🌟 動態高亮閃爍動畫效果 */
+        .highlight-flash { background: #e0f2fe !important; animation: pulseGlow 1.5s ease infinite; }
+        .row-added { animation: rowHighlight 1.5s ease both; }
+
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+        @keyframes pulseGlow { 0% { background-color: #e0f2fe; } 50% { background-color: #bae6fd; } 100% { background-color: #e0f2fe; } }
+        @keyframes rowHighlight { 0% { background-color: #bbf7d0; } 100% { background-color: transparent; } }
     </style>
 </head>
 <body>
 
 <nav class="sidebar">
     <h2>練習題目導覽</h2>
-    <a href="#" class="nav-link active">🏠 首頁總覽</a>
+    <div onclick="switchPage('home')" class="nav-link active" id="linkHome">🏠 首頁總覽</div>
     <a href="reports/api_analysis_dashboard.html" class="nav-link">📈 API 數據統計</a>
     <a href="https://docs.google.com/spreadsheets/d/1sjFA2EptYqLX3KBy24WrCqwScTkmXz-jR_1adKeSqxQ" target="_blank" 
        style="padding-left: 45px; font-size: 0.8em; color: #94a3b8; text-decoration: none; display: block; margin-top: -5px; margin-bottom: 10px;">
         └ 🔗 雲端試算表連結
     </a>
     
-    <!-- 題目二對應的連結 -->
     <a href="reports/allure-report.html" class="nav-link">📊 遊戲數值監控</a>
 
-    <!-- 題目三對應的連結 -->
     <a href="https://jira-bug-stats.onrender.com" class="nav-link" target="_blank">
         🧙‍♂️ QA Team Jira Bug開單數量統計
     </a>
+
+    <div onclick="switchPage('bot')" class="nav-link" id="linkBot">🧚 LINE 代辦事項及日曆小精靈</div>
 
     <div style="margin-top: 50px; padding: 15px; font-size: 0.8rem; background: rgba(255,255,255,0.1); border-radius: 8px;">
         💡 提示：點擊上方練習題即可查看完整測試報告。
@@ -80,48 +140,138 @@
 </nav>
 
 <main class="main-content">
-    <h1>Rose 的 QA 自動化測試練習</h1>
-    <p>這裡記錄了我從 API 分析、數據統計到自動化部署的學習歷程。每個專案都整合了 Python 腳本分析與前端視覺化呈現。</p>
     
-    <!-- 📦 題目一 -->
-    <div class="project-section">
-        <div class="project-header">
-            <h3 class="project-title">題目一：API 資料統計與分析報告</h3>
-            <span class="tech-tag">Python / JSON / Data Analysis</span>
+    <div id="homePageView" class="page-view active-view">
+        <h1>Rose 的 QA 自動化測試練習</h1>
+        <p>這裡記錄了我從 API 分析、數據統計到自動化部署的學習歷程。每個專案都整合了 Python 腳本分析與前端視覺化呈現。</p>
+        
+        <div class="project-section">
+            <div class="project-header">
+                <h3 class="project-title">題目一：API 資料統計與分析報告</h3>
+                <span class="tech-tag">Python / JSON / Data Analysis</span>
+            </div>
+            <p><strong>練習目的：</strong> 運用 Python 腳本自動化處理原始 API 資料，將複雜的欄位資訊轉化為易於閱讀的格式，並透過雲端同步提升資料管理效率。</p>
+            <p><strong>技術重點：</strong> 使用 Antigravity 框架撰寫自動化腳本，實作英文欄位自動翻譯為繁體中文並進行資料格式化。整合 AI 運算邏輯，針對「追殺局」玩家贏錢比例進行精確計算並設定警示機制。</p>
+            <div style="display: flex; gap: 15px; margin-top: 25px; align-items: center;">
+                <a href="reports/api_analysis_dashboard.html" class="btn">進入查看成果 →</a>
+                <a href="https://docs.google.com/spreadsheets/d/1sjFA2EptYqLX3KBy24WrCqwScTkmXz-jR_1adKeSqxQ" target="_blank" class="btn" style="background-color: #28a745;">
+                    📊 查看 Google 試算表
+                </a>
+            </div>
         </div>
-        <p><strong>練習目的：</strong> 運用 Python 腳本自動化處理原始 API 資料，將複雜的欄位資訊轉化為易於閱讀的格式，並透過雲端同步提升資料管理效率。</p>
-        <p><strong>技術重點：</strong> 使用 Antigravity 框架撰寫自動化腳本，實作英文欄位自動翻譯為繁體中文並進行資料格式化。整合 AI 運算邏輯，針對「追殺局」玩家贏錢比例進行精確計算並設定警示機制。</p>
-        <div style="display: flex; gap: 15px; margin-top: 25px; align-items: center;">
-            <a href="reports/api_analysis_dashboard.html" class="btn">進入查看成果 →</a>
-            <a href="https://docs.google.com/spreadsheets/d/1sjFA2EptYqLX3KBy24WrCqwScTkmXz-jR_1adKeSqxQ" target="_blank" class="btn" style="background-color: #28a745;">
-                📊 查看 Google 試算表
-            </a>
+
+        <div class="project-section">
+            <div class="project-header">
+                <h3 class="project-title">題目二：遊戲數值回測監控 Dashboard</h3>
+                <span class="tech-tag">Python / HTML / GitHub Pages</span>
+            </div>
+            <p><strong>練習目的：</strong> 將測試產出的原始資料轉化為結構化的視覺報表，提供團隊清晰、具備高度回溯價值的品質監控成果。</p>
+            <p><strong>技術重點：</strong> 串接前段處理完成的資料並套用 Allure 報表框架，實作完整的欄位映射與 Log 紀錄整合。</p>
+            <div style="display: flex; gap: 15px; margin-top: 25px; align-items: center;">
+                <a href="reports/allure-report.html" class="btn">進入查看成果 →</a>
+            </div>
         </div>
+
+        <div class="project-section">
+            <div class="project-header">
+                <h3 class="project-title">題目三：Jira Bug 數據自動化統計工具</h3>
+                <span class="tech-tag">Python / Flask / Jira API / Pandas</span>
+            </div>
+            <p><strong>練習目的：</strong> 解決手動統計 Bug 的耗時問題，透過 API 自動化抓取數據並產出視覺化報表與 Excel。</p>
+            <p><strong>技術重點：</strong> 串接 Jira REST API、環境變數資安管理、支援雲端演示模式與內網真實模式雙切換。</p>
+            <div style="display: flex; gap: 15px; margin-top: 25px; align-items: center;">
+                <a href="https://jira-bug-stats.onrender.com" class="btn" target="_blank">🚀 進入展示頁面</a>
+            </div>
+        </div>
+
+        <div class="project-section">
+            <div class="project-header">
+                <h3 class="project-title">題目四：LINE 多用戶代辦事項及日曆小精靈</h3>
+                <span class="tech-tag">FastAPI / LINE Bot / Google API</span>
+            </div>
+            <p><strong>練習目的：</strong> 打造多用戶數據隔離的自動化管理排程系統。使用者在 LINE 端輸入指令，系統將透過異步微服務架構，精準完成試算表分頁數據隔離保護，以及 Google 日曆雙向智慧同步功能。</p>
+            <p><strong>技術重點：</strong> 巨型代碼完全重構，全面落實「職責分離」；採用新版 FastAPI 官方首選的 lifespan 機制，優雅管理背景定時巡邏廣播鬧鐘的安全生命週期。</p>
+            <div style="display: flex; gap: 15px; margin-top: 25px; align-items: center;">
+                <a href="javascript:void(0);" onclick="switchPage('bot')" class="btn">🚀 進入展示頁面</a>
+            </div>
+        </div>
+
     </div>
 
-    <!-- 📦 題目二：Dashboard -->
-    <div class="project-section">
-        <div class="project-header">
-            <h3 class="project-title">題目二：遊戲數值回測監控 Dashboard</h3>
-            <span class="tech-tag">Python / HTML / GitHub Pages</span>
-        </div>
-        <p><strong>練習目的：</strong> 將測試產出的原始資料轉化為結構化的視覺報表，提供團隊清晰、具備高度回溯價值的品質監控成果。</p>
-        <p><strong>技術重點：</strong> 串接前段處理完成的資料並套用 Allure 報表框架，實作完整的欄位映射與 Log 紀錄整合。</p>
-        <div style="display: flex; gap: 15px; margin-top: 25px; align-items: center;">
-            <a href="reports/allure-report.html" class="btn">進入查看成果 →</a>
-        </div>
-    </div>
+    <div id="botPageView" class="page-view">
+        <div class="project-section">
+            <div class="project-header">
+                <h3 class="project-title">題目四：LINE 多用戶代辦事項及日曆小精靈 (實機功能模擬)</h3>
+                <span class="tech-tag">FastAPI / LINE Bot SDK / Google API / APScheduler</span>
+            </div>
+            <p><strong>練習目的：</strong> 打造多用戶數據隔離的自動化管理排程系統。使用者在 LINE 端輸入指令，系統將透過異步微服務架構，精準完成試算表分頁數據隔離保護，以及 Google 日曆雙向智慧同步功能。</p>
+            <p><strong>架構亮點：</strong> 巨型代碼完全重構，全面落實「職責分離」心法；採用新版 FastAPI 官方首選的 <code>lifespan</code> 機制，優雅管理背景定時巡邏廣播鬧鐘的安全生命週期。</p>
+            
+            <div style="background: #fffbe6; border-left: 4px solid #fadb14; padding: 12px 15px; font-size: 0.88rem; margin: 15px 0; color: #ad8b00; border-radius: 4px;">
+                ⚠️ 核心代碼（Python）目前安全運行於個人 Private Repository 與雲端 Render 生產環境。為保護個人私密 API 金鑰安全性，下方沙盒全面 1:1 模擬後端核心雙向同步運作邏輯，歡迎點擊 LINE 快捷面板體驗。
+            </div>
 
-    <!-- 📦 題目三：Jira 工具 -->
-    <div class="project-section">
-        <div class="project-header">
-            <h3 class="project-title">題目三：Jira Bug 數據自動化統計工具</h3>
-            <span class="tech-tag">Python / Flask / Jira API / Pandas</span>
-        </div>
-        <p><strong>練習目的：</strong> 解決手動統計 Bug 的耗時問題，透過 API 自動化抓取數據並產出視覺化報表與 Excel。</p>
-        <p><strong>技術重點：</strong> 串接 Jira REST API、環境變數資安管理、支援雲端演示模式與內網真實模式雙切換。</p>
-        <div style="display: flex; gap: 15px; margin-top: 25px; align-items: center;">
-            <a href="https://jira-bug-stats.onrender.com" class="btn" target="_blank">🚀 進入展示頁面</a>
+            <div class="sandbox-container">
+                
+                <div class="mock-phone">
+                    <div class="phone-header">💬 LINE 代辦事項小精靈</div>
+                    <div class="chat-body" id="chatBody">
+                        <div class="msg bot">🙋‍♀️ 您好！歡迎使用代辦事項小精靈。請點擊下方的快捷指令面板與我互動！</div>
+                    </div>
+                    <div class="phone-controls">
+                        <button class="ctrl-btn" onclick="triggerCmd('user_init', '我是 Rose')" id="btnInit">💡 [開通個人分頁] 輸入：「我是 Rose」</button>
+                        <button class="ctrl-btn" onclick="triggerCmd('add_todo', '新增 買牛奶, 繳電費')" id="btnTodo">📝 [多筆雜事記錄] 輸入：「新增 買牛奶, 繳電費」</button>
+                        <button class="ctrl-btn" onclick="triggerCmd('book_cal', '預約 6/18 09:00 QA會議')" id="btnCal">📅 [日曆同步] 輸入：「預約 6/18 09:00 QA會議」</button>
+                    </div>
+                </div>
+
+                <div class="mock-backend">
+                    
+                    <div class="backend-card">
+                        <div class="card-title">🟢 Google Sheets 雲端資料庫後台 (多用戶隔離)</div>
+                        <table class="sheet-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 15%;">編號</th>
+                                    <th style="width: 55%;">待辦事項內容</th>
+                                    <th style="width: 30%;">當前狀態</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sheetBody">
+                                <tr>
+                                    <td colspan="3" style="text-align: center; color: #94a3b8; padding: 20px;">請先點擊 LINE 開通指令建立個人分頁</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="sheet-tabs" id="sheetTabs">
+                            <div class="tab active" id="tabMain">🌐 系統主控台</div>
+                        </div>
+                    </div>
+
+                    <div class="backend-card">
+                        <div class="card-title">🔵 Google Calendar 雲端行程表 (時區：Asia/Taipei)</div>
+                        <div style="font-size: 0.8rem; font-weight: bold; margin-bottom: 8px; color: #475569;">📅 當週重要行程 (2026年 6月)</div>
+                        <div class="cal-grid">
+                            <div class="cal-day-header">一 (6/15)</div>
+                            <div class="cal-day-header">二 (6/16)</div>
+                            <div class="cal-day-header">三 (6/17)</div>
+                            <div class="cal-day-header" style="color:var(--accent-color);">四 (6/18)</div>
+                            <div class="cal-day-header">五 (6/19)</div>
+                            <div class="cal-day-header">六 (6/20)</div>
+                            <div class="cal-day-header">日 (6/21)</div>
+                            
+                            <div class="cal-cell"></div>
+                            <div class="cal-cell"></div>
+                            <div class="cal-cell"></div>
+                            <div class="cal-cell" id="calTargetCell"></div>
+                            <div class="cal-cell"></div>
+                            <div class="cal-cell"></div>
+                            <div class="cal-cell"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
         </div>
     </div>
 
@@ -129,6 +279,114 @@
         © 2026 Rose Chang - QA Automation Journey
     </div>
 </main>
+
+<script>
+    function switchPage(pageTarget) {
+        const homeView = document.getElementById('homePageView');
+        const botView = document.getElementById('botPageView');
+        const linkHome = document.getElementById('linkHome');
+        const linkBot = document.getElementById('linkBot');
+
+        if (pageTarget === 'home') {
+            homeView.classList.add('active-view');
+            botView.classList.remove('active-view');
+            linkHome.classList.add('active');
+            linkBot.classList.remove('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else if (pageTarget === 'bot') {
+            botView.classList.add('active-view');
+            homeView.classList.remove('active-view');
+            linkBot.classList.add('active');
+            linkHome.classList.remove('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }
+
+    let isAnimating = false;
+
+    function triggerCmd(type, cmdText) {
+        if (isAnimating) return;
+        isAnimating = true;
+        setButtonsState(true);
+
+        const chatBody = document.getElementById('chatBody');
+        appendMsg(cmdText, 'user');
+
+        setTimeout(() => {
+            if (type === 'user_init') {
+                appendMsg('👤 系統查無專屬分頁，正在為您開通...<br>🎉 [Rose] 個人雲端專屬分頁建立成功！資料已完全隱私隔離。', 'bot');
+                
+                const sheetBody = document.getElementById('sheetBody');
+                sheetBody.innerHTML = `
+                    <tr class="row-added">
+                        <td colspan="3" style="text-align: center; color: #64748b; padding: 15px;">📊 [Rose] 專屬加密空間 - 目前尚無 any 雜事紀錄</td>
+                    </tr>
+                `;
+                const sheetTabs = document.getElementById('sheetTabs');
+                if (!document.getElementById('tabRose')) {
+                    const newTab = document.createElement('div');
+                    newTab.id = 'tabRose';
+                    newTab.className = 'tab active';
+                    newTab.innerText = '👤 Rose (個人分頁)';
+                    document.getElementById('tabMain').className = 'tab';
+                    sheetTabs.appendChild(newTab);
+                }
+                unlockAnimation();
+
+            } else if (type === 'add_todo') {
+                appendMsg('📝 收到雜事通知！已為您寫入專屬 Google Sheets 資料庫。<br>🔍 輸入「查詢」可隨時看最新清單。', 'bot');
+                
+                const sheetBody = document.getElementById('sheetBody');
+                sheetBody.innerHTML = `
+                    <tr class="row-added">
+                        <td>1</td>
+                        <td>🥛 買牛奶</td>
+                        <td style="color: #e67e22; font-weight: bold;">⏳ 未完成</td>
+                    </tr>
+                    <tr class="row-added">
+                        <td>2</td>
+                        <td>⚡ 繳電費</td>
+                        <td style="color: #e67e22; font-weight: bold;">⏳ 未完成</td>
+                    </tr>
+                `;
+                unlockAnimation();
+
+            } else if (type === 'book_cal') {
+                appendMsg('📅 智慧正則雷達解析成功！<br>🎯 行程已同步寫入 Google 日曆。<br>⏰ 背景巡邏鬧鐘將於每日 08:00 與 21:00 主動提醒您！', 'bot');
+                
+                const targetCell = document.getElementById('calTargetCell');
+                targetCell.classList.add('highlight-flash');
+                targetCell.innerHTML = `
+                    <div style="font-weight: bold; color: #1e293b;">18日</div>
+                    <div class="cal-event">💻 09:00 QA會議</div>
+                `;
+                unlockAnimation();
+            }
+        }, 800);
+    }
+
+    function appendMsg(text, sender) {
+        const chatBody = document.getElementById('chatBody');
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `msg ${sender}`;
+        msgDiv.innerHTML = text;
+        chatBody.appendChild(msgDiv);
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    function setButtonsState(disabled) {
+        document.getElementById('btnInit').disabled = disabled;
+        document.getElementById('btnTodo').disabled = disabled;
+        document.getElementById('btnCal').disabled = disabled;
+    }
+
+    function unlockAnimation() {
+        setTimeout(() => {
+            isAnimating = false;
+            setButtonsState(false);
+        }, 500);
+    }
+</script>
 
 </body>
 </html>
