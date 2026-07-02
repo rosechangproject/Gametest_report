@@ -113,6 +113,53 @@
         @keyframes scaleIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
         @keyframes pulseGlow { 0% { background-color: #e0f2fe; } 50% { background-color: #bae6fd; } 100% { background-color: #e0f2fe; } }
         @keyframes rowHighlight { 0% { background-color: #bbf7d0; } 100% { background-color: transparent; } }
+
+        /* ==========================================
+           題目五：AI 天氣推播 Agent 展示頁
+           ========================================== */
+        #weatherPageView .project-section { max-width: 1180px; margin-left: auto; margin-right: auto; box-sizing: border-box; }
+        #weatherPageView .project-section > .weather-hero,
+        #weatherPageView .project-section > .project-header,
+        #weatherPageView .project-section > p,
+        #weatherPageView .project-section > .weather-phone-grid,
+        #weatherPageView .project-section > .pipeline-grid,
+        #weatherPageView .project-section > .weather-highlight-list { max-width: 1080px; margin-left: auto; margin-right: auto; }
+        .weather-hero { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 28px; align-items: center; margin-bottom: 24px; }
+        .weather-hero > div:first-child { max-width: 620px; justify-self: start; }
+        .weather-hero h2 { color: var(--primary-color); font-size: 1.8rem; margin: 0 0 14px; text-align: left; }
+        .weather-hero p { line-height: 1.8; margin: 0; color: #334155; text-align: left; max-width: 590px; }
+        .weather-proof-panel { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; }
+        .weather-proof-panel h4 { margin: 0 0 8px; color: #334155; font-size: 0.98rem; }
+        .weather-proof-panel img { display: block; max-width: 100%; margin-bottom: 10px; }
+        .weather-proof-panel p { font-size: 0.9rem; line-height: 1.55; }
+        .weather-proof-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .weather-proof-actions .btn { min-width: 0; padding: 8px 10px; font-size: 0.84rem; }
+        .weather-phone-grid { display: flex; justify-content: center; align-items: flex-start; gap: 36px; margin-top: 20px; }
+        .weather-phone { width: min(100%, 330px); aspect-ratio: 9 / 14.5; background: #1f2937; border: 10px solid #20272d; border-radius: 34px; overflow: hidden; box-shadow: 0 14px 30px rgba(15,23,42,0.18); display: flex; flex-direction: column; }
+        .weather-phone.morning { background: #93c5fd; }
+        .weather-phone.evening { background: #64748b; }
+        .weather-phone-header { color: white; padding: 13px 14px; text-align: center; font-weight: bold; background: rgba(15,23,42,0.32); }
+        .weather-chat { flex: 1; padding: 16px; display: flex; flex-direction: column; gap: 11px; }
+        .weather-bubble { align-self: flex-start; max-width: 86%; background: #ffffff; color: #1f2937; border-radius: 14px; border-top-left-radius: 5px; padding: 10px 13px; line-height: 1.55; font-size: 0.82rem; box-shadow: 0 3px 10px rgba(15,23,42,0.08); }
+        .weather-bubble strong { color: #0f766e; }
+        .weather-meta { background: #f8fafc; border-top: 1px solid rgba(15,23,42,0.12); color: #334155; font-size: 0.76rem; line-height: 1.45; padding: 12px 14px; }
+        .pipeline-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 20px; }
+        .pipeline-step { border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; background: #ffffff; position: relative; min-height: 126px; box-sizing: border-box; }
+        .pipeline-step:not(:last-child)::after { content: "→"; position: absolute; right: -14px; top: 42%; color: var(--accent-color); font-weight: bold; font-size: 1.1rem; }
+        .pipeline-icon { font-size: 1.4rem; margin-bottom: 8px; }
+        .pipeline-step h4 { margin: 0 0 6px; color: var(--primary-color); font-size: 0.95rem; }
+        .pipeline-step p { margin: 0; color: #475569; font-size: 0.82rem; line-height: 1.5; }
+        .weather-highlight-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 18px; }
+        .weather-highlight { background: #f8fafc; border-left: 4px solid var(--accent-color); padding: 14px; border-radius: 8px; line-height: 1.6; }
+        .weather-highlight strong { display: block; color: var(--primary-color); margin-bottom: 4px; }
+
+        @media (max-width: 1100px) {
+            .weather-hero,
+            .weather-phone-grid,
+            .pipeline-grid,
+            .weather-highlight-list { grid-template-columns: 1fr; }
+            .pipeline-step:not(:last-child)::after { content: "↓"; right: 50%; top: auto; bottom: -18px; }
+        }
     </style>
 </head>
 <body>
@@ -133,7 +180,7 @@
     </a>
 
     <div onclick="switchPage('bot')" class="nav-link" id="linkBot">🧚 LINE 代辦事項及日曆小精靈</div>
-    <div onclick="switchPage('home', 'weatherAgentProject')" class="nav-link" id="linkWeather">🌤️ AI 天氣推播 Agent</div>
+    <div onclick="switchPage('weather')" class="nav-link" id="linkWeather">🌤️ AI 天氣推播 Agent</div>
 
     <div style="margin-top: 50px; padding: 15px; font-size: 0.8rem; background: rgba(255,255,255,0.1); border-radius: 8px;">
         💡 提示：點擊上方練習題即可查看完整測試報告。
@@ -197,7 +244,7 @@
             </div>
         </div>
 
-        <div class="project-section" id="weatherAgentProject">
+        <div class="project-section">
             <div class="project-header">
                 <h3 class="project-title">題目五：AI 天氣推播 Agent</h3>
                 <span class="tech-tag">Python / GitHub Actions / Dify / LINE API</span>
@@ -205,10 +252,131 @@
             <p><strong>練習目的：</strong> 打造每日自動化天氣提醒服務，將中央氣象署天氣資料與環境部 AQI 資料整理成結構化 JSON，再交由 Dify 產生自然語氣文案，最後透過 LINE Messaging API 主動推播。</p>
             <p><strong>技術重點：</strong> 串接多個外部 API、使用 GitHub Actions 排程自動執行、透過 GitHub Secrets 管理金鑰，並加入早晚模式、錯誤處理、語法檢查與 log rotation，讓小型自動化服務具備可維護性。</p>
             <div style="display: flex; gap: 15px; margin-top: 25px; align-items: center;">
-                <a href="https://github.com/Rosechang-project/weather_agent" class="btn" target="_blank">🚀 查看 GitHub 專案</a>
+                <a href="javascript:void(0);" onclick="switchPage('weather')" class="btn">🚀 進入展示頁面</a>
             </div>
         </div>
 
+    </div>
+
+    <div id="weatherPageView" class="page-view">
+        <div class="project-section">
+            <div class="weather-hero">
+                <div>
+                    <h2>題目五：AI 天氣推播 Agent</h2>
+                    <p>
+                        這是一個每日雙情境天氣推播系統，會定時整合中央氣象署天氣資料與環境部 AQI 資料。
+                        系統會將資料清洗成 JSON，交給 Dify 生成自然語氣文案，最後透過 LINE Messaging API 主動推播到手機。
+                    </p>
+                </div>
+                <div class="weather-proof-panel">
+                    <h4>雲端排程狀態</h4>
+                    <img src="https://github.com/Rosechang-project/weather_agent/actions/workflows/weather-agent.yml/badge.svg" alt="Weather Agent GitHub Actions status">
+                    <p style="margin: 0 0 14px; color: #475569; line-height: 1.6;">
+                        GitHub Actions 會在 Linux 雲端環境執行語法檢查、JSON 驗證與正式推播流程。
+                    </p>
+                    <div class="weather-proof-actions">
+                        <a class="btn" href="https://github.com/Rosechang-project/weather_agent" target="_blank">GitHub 專案</a>
+                        <a class="btn" href="https://github.com/Rosechang-project/weather_agent/actions/workflows/weather-agent.yml" target="_blank" style="background:#16a34a;">Actions Logs</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="project-section">
+            <div class="project-header">
+                <h3 class="project-title">每日雙情境 LINE 推播成果</h3>
+                <span class="tech-tag">Morning / Evening Mode</span>
+            </div>
+            <p>
+                早報與晚報不是固定範本文字，而是依照即時天氣、降雨機率與 AQI 狀態動態產生不同語氣與提醒重點。
+                目前排程避開 GitHub Actions 整點尖峰，設定為台灣時間 07:13 與 21:17。
+            </p>
+
+            <div class="weather-phone-grid">
+                <div class="weather-phone morning">
+                    <div class="weather-phone-header">早安通勤版｜07:13</div>
+                    <div class="weather-chat">
+                        <div class="weather-bubble">
+                            <strong>早安，今天出門前快速看一下。</strong><br>
+                            北北桃多數生活圈降雨機率偏低，通勤可以輕裝，但午後仍建議保留薄外套與水瓶。
+                        </div>
+                        <div class="weather-bubble">
+                            今日曬衣條件整體不錯，若要曬厚衣物，建議安排在上午到午後前段；AQI 目前維持可接受範圍。
+                        </div>
+                    </div>
+                    <div class="weather-meta">💡 今日重點：通勤穿搭、降雨提醒、曬衣指引</div>
+                </div>
+
+                <div class="weather-phone evening">
+                    <div class="weather-phone-header">晚安防備版｜21:17</div>
+                    <div class="weather-chat">
+                        <div class="weather-bubble">
+                            <strong>晚安，先替明天做準備。</strong><br>
+                            夜間濕度偏高，若家中衣物未乾，建議除濕機定時運轉；明早出門前再確認降雨變化。
+                        </div>
+                        <div class="weather-bubble">
+                            明日生活圈溫度差異不大，桃園與雙北通勤可正常安排。若有戶外行程，建議保留雨具彈性。
+                        </div>
+                    </div>
+                    <div class="weather-meta">💡 明日準備：除濕判斷、雨具備案、夜間曬衣</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="project-section">
+            <div class="project-header">
+                <h3 class="project-title">數據流水線架構</h3>
+                <span class="tech-tag">Data Pipeline / Automation</span>
+            </div>
+            <div class="pipeline-grid">
+                <div class="pipeline-step">
+                    <div class="pipeline-icon">⏱️</div>
+                    <h4>定時觸發</h4>
+                    <p>GitHub Actions cron 依早晚排程啟動雲端 runner。</p>
+                </div>
+                <div class="pipeline-step">
+                    <div class="pipeline-icon">🌦️</div>
+                    <h4>資料抓取</h4>
+                    <p>Python 串接中央氣象署與環境部 AQI API。</p>
+                </div>
+                <div class="pipeline-step">
+                    <div class="pipeline-icon">🧹</div>
+                    <h4>清洗整合</h4>
+                    <p>依 config 監控地點整理溫度、降雨機率與 AQI。</p>
+                </div>
+                <div class="pipeline-step">
+                    <div class="pipeline-icon">🧠</div>
+                    <h4>Dify 生成</h4>
+                    <p>將 JSON 傳入工作流，解耦文案邏輯與程式碼。</p>
+                </div>
+                <div class="pipeline-step">
+                    <div class="pipeline-icon">📲</div>
+                    <h4>LINE 觸達</h4>
+                    <p>透過 Messaging API 主動推播最終天氣提醒。</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="project-section">
+            <div class="project-header">
+                <h3 class="project-title">工程實作亮點</h3>
+                <span class="tech-tag">Robustness / Maintainability</span>
+            </div>
+            <div class="weather-highlight-list">
+                <div class="weather-highlight">
+                    <strong>Secrets 管理</strong>
+                    API key 與 LINE token 透過 GitHub Secrets 注入，不寫死在程式碼。
+                </div>
+                <div class="weather-highlight">
+                    <strong>失敗保護</strong>
+                    HTTP status、timeout 與例外處理集中檢查，避免推播流程靜默失敗。
+                </div>
+                <div class="weather-highlight">
+                    <strong>維護性</strong>
+                    天氣抓取、AQI 抓取、資料整理、Dify 與 LINE 推播拆成清楚模組。
+                </div>
+            </div>
+        </div>
     </div>
 
     <div id="botPageView" class="page-view">
@@ -294,9 +462,10 @@
 </main>
 
 <script>
-    function switchPage(pageTarget, scrollTargetId) {
+    function switchPage(pageTarget) {
         const homeView = document.getElementById('homePageView');
         const botView = document.getElementById('botPageView');
+        const weatherView = document.getElementById('weatherPageView');
         const linkHome = document.getElementById('linkHome');
         const linkBot = document.getElementById('linkBot');
         const linkWeather = document.getElementById('linkWeather');
@@ -304,23 +473,31 @@
         if (pageTarget === 'home') {
             homeView.classList.add('active-view');
             botView.classList.remove('active-view');
-            linkHome.classList.toggle('active', !scrollTargetId);
+            weatherView.classList.remove('active-view');
+            linkHome.classList.add('active');
             linkBot.classList.remove('active');
             if (linkWeather) {
-                linkWeather.classList.toggle('active', scrollTargetId === 'weatherAgentProject');
+                linkWeather.classList.remove('active');
             }
-            if (scrollTargetId) {
-                document.getElementById(scrollTargetId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            } else {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         } else if (pageTarget === 'bot') {
             botView.classList.add('active-view');
             homeView.classList.remove('active-view');
+            weatherView.classList.remove('active-view');
             linkBot.classList.add('active');
             linkHome.classList.remove('active');
             if (linkWeather) {
                 linkWeather.classList.remove('active');
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else if (pageTarget === 'weather') {
+            weatherView.classList.add('active-view');
+            homeView.classList.remove('active-view');
+            botView.classList.remove('active-view');
+            linkHome.classList.remove('active');
+            linkBot.classList.remove('active');
+            if (linkWeather) {
+                linkWeather.classList.add('active');
             }
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
