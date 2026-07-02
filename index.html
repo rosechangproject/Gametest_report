@@ -133,6 +133,7 @@
     </a>
 
     <div onclick="switchPage('bot')" class="nav-link" id="linkBot">🧚 LINE 代辦事項及日曆小精靈</div>
+    <div onclick="switchPage('home', 'weatherAgentProject')" class="nav-link" id="linkWeather">🌤️ AI 天氣推播 Agent</div>
 
     <div style="margin-top: 50px; padding: 15px; font-size: 0.8rem; background: rgba(255,255,255,0.1); border-radius: 8px;">
         💡 提示：點擊上方練習題即可查看完整測試報告。
@@ -193,6 +194,18 @@
             <p><strong>技術重點：</strong> 巨型代碼完全重構，全面落實「職責分離」；採用新版 FastAPI 官方首選的 lifespan 機制，優雅管理背景定時巡邏廣播鬧鐘的安全生命週期。</p>
             <div style="display: flex; gap: 15px; margin-top: 25px; align-items: center;">
                 <a href="javascript:void(0);" onclick="switchPage('bot')" class="btn">🚀 進入展示頁面</a>
+            </div>
+        </div>
+
+        <div class="project-section" id="weatherAgentProject">
+            <div class="project-header">
+                <h3 class="project-title">題目五：AI 天氣推播 Agent</h3>
+                <span class="tech-tag">Python / GitHub Actions / Dify / LINE API</span>
+            </div>
+            <p><strong>練習目的：</strong> 打造每日自動化天氣提醒服務，將中央氣象署天氣資料與環境部 AQI 資料整理成結構化 JSON，再交由 Dify 產生自然語氣文案，最後透過 LINE Messaging API 主動推播。</p>
+            <p><strong>技術重點：</strong> 串接多個外部 API、使用 GitHub Actions 排程自動執行、透過 GitHub Secrets 管理金鑰，並加入早晚模式、錯誤處理、語法檢查與 log rotation，讓小型自動化服務具備可維護性。</p>
+            <div style="display: flex; gap: 15px; margin-top: 25px; align-items: center;">
+                <a href="https://github.com/Rosechang-project/weather_agent" class="btn" target="_blank">🚀 查看 GitHub 專案</a>
             </div>
         </div>
 
@@ -281,23 +294,34 @@
 </main>
 
 <script>
-    function switchPage(pageTarget) {
+    function switchPage(pageTarget, scrollTargetId) {
         const homeView = document.getElementById('homePageView');
         const botView = document.getElementById('botPageView');
         const linkHome = document.getElementById('linkHome');
         const linkBot = document.getElementById('linkBot');
+        const linkWeather = document.getElementById('linkWeather');
 
         if (pageTarget === 'home') {
             homeView.classList.add('active-view');
             botView.classList.remove('active-view');
-            linkHome.classList.add('active');
+            linkHome.classList.toggle('active', !scrollTargetId);
             linkBot.classList.remove('active');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (linkWeather) {
+                linkWeather.classList.toggle('active', scrollTargetId === 'weatherAgentProject');
+            }
+            if (scrollTargetId) {
+                document.getElementById(scrollTargetId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
         } else if (pageTarget === 'bot') {
             botView.classList.add('active-view');
             homeView.classList.remove('active-view');
             linkBot.classList.add('active');
             linkHome.classList.remove('active');
+            if (linkWeather) {
+                linkWeather.classList.remove('active');
+            }
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     }
