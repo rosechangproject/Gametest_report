@@ -153,12 +153,47 @@
         .weather-highlight { background: #f8fafc; border-left: 4px solid var(--accent-color); padding: 14px; border-radius: 8px; line-height: 1.6; }
         .weather-highlight strong { display: block; color: var(--primary-color); margin-bottom: 4px; }
 
+        /* ==========================================
+           題目四：LINE 小精靈 Case Study 收斂版面
+           ========================================== */
+        #botPageView .project-section { max-width: 1180px; margin-left: auto; margin-right: auto; box-sizing: border-box; }
+        #botPageView .project-section > .project-header,
+        #botPageView .project-section > p,
+        #botPageView .project-section > .bot-notice,
+        #botPageView .project-section > .sandbox-container,
+        #botPageView .project-section > .bot-flow-section,
+        #botPageView .project-section > .bot-tech-list { max-width: 1080px; margin-left: auto; margin-right: auto; }
+        #botPageView .sandbox-container { grid-template-columns: 320px minmax(0, 1fr); gap: 22px; align-items: start; }
+        #botPageView .mock-phone { height: 460px; }
+        #botPageView .mock-backend { gap: 16px; }
+        #botPageView .backend-card { padding: 14px; }
+        .bot-notice { background: #fffbe6; border-left: 4px solid #fadb14; padding: 12px 15px; font-size: 0.88rem; margin: 15px auto; color: #ad8b00; border-radius: 4px; box-sizing: border-box; }
+        .bot-flow-section { margin-top: 28px; border-top: 1px solid #e2e8f0; padding-top: 22px; }
+        .bot-flow-section h4 { color: var(--primary-color); font-size: 1.1rem; margin: 0 0 14px; }
+        .bot-flow-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+        .bot-flow-step { border: 1px solid #e2e8f0; background: #ffffff; border-radius: 10px; padding: 12px; min-height: 108px; position: relative; box-sizing: border-box; }
+        .bot-flow-step:not(:last-child)::after { content: "→"; position: absolute; right: -13px; top: 38%; color: var(--accent-color); font-weight: bold; }
+        .bot-flow-icon { font-size: 1.25rem; margin-bottom: 6px; }
+        .bot-flow-step strong { display: block; color: var(--primary-color); font-size: 0.88rem; margin-bottom: 5px; }
+        .bot-flow-step span { color: #475569; font-size: 0.78rem; line-height: 1.45; }
+        .bot-tech-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 18px; }
+        .bot-tech-card { background: #f8fafc; border-left: 4px solid var(--line-green); padding: 14px; border-radius: 8px; line-height: 1.6; }
+        .bot-tech-card strong { display: block; color: var(--primary-color); margin-bottom: 4px; }
+        .bot-link-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+        .btn.secondary { background: #64748b; }
+        .btn.disabled { background: #94a3b8; cursor: default; transform: none; pointer-events: none; }
+
         @media (max-width: 1100px) {
             .weather-hero,
             .weather-phone-grid,
             .pipeline-grid,
-            .weather-highlight-list { grid-template-columns: 1fr; }
+            .weather-highlight-list,
+            .bot-flow-grid,
+            .bot-tech-list { grid-template-columns: 1fr; }
+            .weather-phone-grid { flex-direction: column; align-items: center; }
             .pipeline-step:not(:last-child)::after { content: "↓"; right: 50%; top: auto; bottom: -18px; }
+            .bot-flow-step:not(:last-child)::after { content: "↓"; right: 50%; top: auto; bottom: -16px; }
+            #botPageView .sandbox-container { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -388,8 +423,12 @@
             <p><strong>練習目的：</strong> 打造多用戶數據隔離的自動化管理排程系統。使用者在 LINE 端輸入指令，系統將透過異步微服務架構，精準完成試算表分頁數據隔離保護，以及 Google 日曆雙向智慧同步功能。</p>
             <p><strong>架構亮點：</strong> 巨型代碼完全重構，全面落實「職責分離」心法；採用新版 FastAPI 官方首選的 <code>lifespan</code> 機制，優雅管理背景定時巡邏廣播鬧鐘的安全生命週期。</p>
             
-            <div style="background: #fffbe6; border-left: 4px solid #fadb14; padding: 12px 15px; font-size: 0.88rem; margin: 15px 0; color: #ad8b00; border-radius: 4px;">
+            <div class="bot-notice">
                 ⚠️ 核心代碼（Python）目前安全運行於個人 Private Repository 與雲端 Render 生產環境。為保護個人私密 API 金鑰安全性，下方沙盒全面 1:1 模擬後端核心雙向同步運作邏輯，歡迎點擊 LINE 快捷面板體驗。
+            </div>
+            <div class="bot-link-row" style="max-width: 1080px; margin-left: auto; margin-right: auto;">
+                <span class="btn secondary disabled">Render 生產環境</span>
+                <span class="btn disabled">Private Repository</span>
             </div>
 
             <div class="sandbox-container">
@@ -451,6 +490,57 @@
                         </div>
                     </div>
 
+                </div>
+            </div>
+
+            <div class="bot-flow-section">
+                <h4>技術流程</h4>
+                <div class="bot-flow-grid">
+                    <div class="bot-flow-step">
+                        <div class="bot-flow-icon">💬</div>
+                        <strong>接收 LINE 指令</strong>
+                        <span>使用者在 LINE 輸入代辦、分帳或日曆同步需求。</span>
+                    </div>
+                    <div class="bot-flow-step">
+                        <div class="bot-flow-icon">⚡</div>
+                        <strong>後端判斷功能</strong>
+                        <span>FastAPI 接收 webhook，判斷要執行哪一種功能。</span>
+                    </div>
+                    <div class="bot-flow-step">
+                        <div class="bot-flow-icon">🧩</div>
+                        <strong>建立個人分頁</strong>
+                        <span>依 LINE user id 分開保存每位使用者的資料。</span>
+                    </div>
+                    <div class="bot-flow-step">
+                        <div class="bot-flow-icon">🟢</div>
+                        <strong>串接 Google Sheets</strong>
+                        <span>把代辦與記帳資料寫入雲端試算表。</span>
+                    </div>
+                    <div class="bot-flow-step">
+                        <div class="bot-flow-icon">🔵</div>
+                        <strong>同步 Google Calendar</strong>
+                        <span>把預約與會議寫進日曆，並固定台灣時區。</span>
+                    </div>
+                    <div class="bot-flow-step">
+                        <div class="bot-flow-icon">⏰</div>
+                        <strong>設定定時提醒</strong>
+                        <span>用背景排程在指定時間主動發送提醒。</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bot-tech-list">
+                <div class="bot-tech-card">
+                    <strong>多用戶資料分開保存</strong>
+                    每位使用者都有自己的資料範圍，避免代辦與記帳內容混在一起。
+                </div>
+                <div class="bot-tech-card">
+                    <strong>串接 Google Sheets 與 Calendar</strong>
+                    代辦和記帳寫進試算表，預約和會議同步到 Google 日曆。
+                </div>
+                <div class="bot-tech-card">
+                    <strong>Render 部署與金鑰保護</strong>
+                    API key 與 token 放在環境變數中，避免寫死在程式碼裡。
                 </div>
             </div>
         </div>
@@ -553,7 +643,7 @@
                 unlockAnimation();
 
             } else if (type === 'book_cal') {
-                appendMsg('📅 智慧正則雷達解析成功！<br>🎯 行程已同步寫入 Google 日曆。<br>⏰ 背景巡邏鬧鐘將於每日 08:00 與 21:00 主動提醒您！', 'bot');
+                appendMsg('📅 日期與時間解析成功！<br>🎯 行程已同步寫入 Google 日曆。<br>⏰ 背景巡邏鬧鐘將於每日 08:00 與 21:00 主動提醒您！', 'bot');
                 
                 const targetCell = document.getElementById('calTargetCell');
                 targetCell.classList.add('highlight-flash');
